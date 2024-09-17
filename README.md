@@ -51,11 +51,11 @@ Once installed, open up your terminal (or Anaconda prompt if you're on Windows).
 Install the environment from the specified environment file:
 
     conda env create --file environment.yml
-    conda activate ift6758-conda-env
+    conda activate ift6758-project
 
 After you install, register the environment so jupyter can see it:
 
-    python -m ipykernel install --user --name=ift6758-conda-env
+    python -m ipykernel install --user --name=ift6758-project
 
 You should now be able to launch jupyter and see your conda environment:
 
