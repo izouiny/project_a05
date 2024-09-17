@@ -52,7 +52,7 @@ class ApiClient:
             if game_count == 0:
                 continue
 
-            for game_number in range(1, game_count):
+            for game_number in range(1, game_count + 1):
                 # Get game data from game_id
                 game_id = get_game_id(season, game_type, game_number)
                 game_data = self.get_game_data(game_id)
