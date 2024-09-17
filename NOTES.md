@@ -9,6 +9,8 @@ The API endpoint is not available anymore.
 
 I found the newest [version of the documentation](https://gitlab.com/dword4/nhlapi/-/blob/master/new-api.md).
 
+[This one](https://github.com/Zmalski/NHL-API-Reference) is also helpful.
+
 ### Helpers
 
 #### Game ID
@@ -39,4 +41,39 @@ Creation of `FileSystemCache` class to store the fetched data in a local file. I
 We could imagine other Cache systems like a `RedisCache`, a `InMemoryCache`, etc.
 But for this project, the `FileSystemCache` is enough.
 
+### Usage of stats API to dinamically retrieve the game count in a season
 
+Here is a sample response from `https://api.nhle.com/stats/rest/en/season`
+
+```json
+{
+  "data": [
+    {
+      "id": 20232024,
+      "allStarGameInUse": 1,
+      "conferencesInUse": 1,
+      "divisionsInUse": 1,
+      "endDate": "2024-06-24T00:00:00",
+      "entryDraftInUse": 1,
+      "formattedSeasonId": "2023-24",
+      "minimumPlayoffMinutesForGoalieStatsLeaders": 240,
+      "minimumRegularGamesForGoalieStatsLeaders": 25,
+      "nhlStanleyCupOwner": 1,
+      "numberOfGames": 82,
+      "olympicsParticipation": 0,
+      "pointForOTLossInUse": 1,
+      "preseasonStartdate": "2023-09-23T00:05:00",
+      "regularSeasonEndDate": "2024-04-18T22:30:00",
+      "rowInUse": 1,
+      "seasonOrdinal": 106,
+      "startDate": "2023-10-10T17:30:00",
+      "supplementalDraftInUse": 0,
+      "tiesInUse": 0,
+      "totalPlayoffGames": 88,
+      "totalRegularSeasonGames": 1312,
+      "wildcardInUse": 1
+    }
+  ],
+  "total": 107
+}
+```
