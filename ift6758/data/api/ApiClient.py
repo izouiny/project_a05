@@ -1,3 +1,5 @@
+from typing import List
+
 import requests
 import json
 
@@ -45,14 +47,16 @@ class ApiClient:
 
         for game_type in game_types:
             # Retrieve game count for this season and type
-            game_count = self.get_game_count_in_season(season, game_type)
-            print("[ApiClient.get_games_data] Found %d games for season %d and type %s" % (game_count, season, game_type))
+            game_numbers = self.get_game_numbers_in_season(season, game_type)
 
             # If no game for this type game, continue
-            if game_count == 0:
+            if game_numbers is None or len(game_numbers) == 0:
+                print("[ApiClient.get_games_data] No games for season %d and type %s" % (season, game_type))
                 continue
 
-            for game_number in range(1, game_count + 1):
+            print("[ApiClient.get_games_data] Found %d games for season %d and type %s" % (len(game_numbers), season, game_type))
+
+            for game_number in game_numbers:
                 # Get game data from game_id
                 game_id = get_game_id(season, game_type, game_number)
                 game_data = self.get_game_data(game_id)
@@ -91,7 +95,7 @@ class ApiClient:
         return json.loads(text)
 
 
-    def get_game_count_in_season(self, season: int, game_type: str) -> int:
+    def get_game_numbers_in_season(self, season: int, game_type: str) -> None | list[int]:
         """
         Get the number of games in a season
         Raises an error if the game_type is not recognized
@@ -103,12 +107,14 @@ class ApiClient:
 
         if season_data is None:
             print("[ApiClient.get_game_count_in_season] Season '%d' not found" % season)
-            return 0
+            return None
 
         if game_type == GameType.REGULAR:
-            return int(season_data["totalRegularSeasonGames"])
+            max_number = int(season_data["totalRegularSeasonGames"])
+            return list(range(1, max_number + 1))
         elif game_type == GameType.PLAYOFF:
-            return int(season_data["totalPlayoffGames"])
+            max_number = int(season_data["totalPlayoffGames"])
+            return list(range(1, max_number + 1))
         else:
             raise Exception("Game type '%s' not recognized" % game_type)
 

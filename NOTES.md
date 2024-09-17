@@ -41,7 +41,7 @@ Creation of `FileSystemCache` class to store the fetched data in a local file. I
 We could imagine other Cache systems like a `RedisCache`, a `InMemoryCache`, etc.
 But for this project, the `FileSystemCache` is enough.
 
-### Usage of stats API to dinamically retrieve the game count in a season
+### Usage of stats API to dynamically retrieve the game count in a season
 
 Here is a sample response from `https://api.nhle.com/stats/rest/en/season`
 
