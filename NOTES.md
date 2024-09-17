@@ -77,3 +77,16 @@ Here is a sample response from `https://api.nhle.com/stats/rest/en/season`
   "total": 107
 }
 ```
+
+### Game data for a whole season
+
+Creation of a method `get_games_data` in the `ApiClient` class to fetch the data for a whole season.
+This stores every game data in the cache.
+
+**Issue**: The game number `0001` for playoffs seems to be not found.
+https://api-web.nhle.com/v1/gamecenter/2020030001/play-by-play returns a 404.
+
+**Solution**: Response found in [the documentation](https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md#game-ids): 
+
+> For playoff games, the 2nd digit of the specific number gives the round of the playoffs,
+> the 3rd digit specifies the matchup, and the 4th digit specifies the game (out of 7).
