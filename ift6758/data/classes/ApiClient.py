@@ -1,7 +1,24 @@
+from typing import List
+
 import requests
 import json
 
 from .Cache import Cache
+
+def get_game_id(season: int, game_type: str, game_number: int) -> str:
+    """
+    Compute a game id
+
+    Args:
+        season (int): the season for which to retrieve the game ID (use starting year of the season)
+        game_type (int): type of game
+        game_number (int): identify the specific game number.
+
+    Returns:
+        list: The game id as string
+    """
+    return str(season) + game_type + ('%04d' % game_number)
+
 
 class ApiClient:
 
@@ -10,6 +27,8 @@ class ApiClient:
     """
 
     base_url = "https://api-web.nhle.com/v1"
+
+    max_game_number = 1800
 
     def __init__(self, cache: Cache = None):
         """
@@ -45,3 +64,9 @@ class ApiClient:
             self.cache.set(uri, text)
 
         return json.loads(text)
+
+    def get_game_data(self, season: int, game_types: list[str]) -> list[object] :
+        """
+        Get data from an entire season
+        """
+
