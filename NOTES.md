@@ -13,9 +13,11 @@ I found the newest [version of the documentation](https://gitlab.com/dword4/nhla
 
 ### Helpers
 
-#### Game ID
+#### Game ID & Series Letter
 
 Addition of a helper function `get_game_id` to compute the game Id from date, game type and game number.
+
+Addition of a helper function `get_series_letter` to compute the series letter from the round and games indices.
 
 ### Enums
 
@@ -26,6 +28,9 @@ Use of enums to define the game types.
 Creation of a ApiClient class to fetch data from the NHL API.
 This class accepts a `Cache` instance in its constructor to store the fetched data.
 This allows to avoid fetching the same data multiple times.
+This also allows to download the whole data in multiple steps.
+
+#### Cache engine
 
 `Cache` is an abstract class that defines the interface for a cache.
 It defines the following methods:
@@ -41,11 +46,13 @@ Creation of `FileSystemCache` class to store the fetched data in a local file. I
 We could imagine other Cache systems like a `RedisCache`, a `InMemoryCache`, etc.
 But for this project, the `FileSystemCache` is enough.
 
-#### Improvement
+##### Improvement
 
 Add method `fetch_from_url_and_cache` in `ApiClient` to avoid repetition of the same code.
 
-### Usage of stats API to dynamically retrieve the game count in a season
+### Endpoints
+
+#### Usage of stats API to dynamically retrieve the game count in a season
 
 Here is a sample response from `https://api.nhle.com/stats/rest/en/season`
 
@@ -82,7 +89,7 @@ Here is a sample response from `https://api.nhle.com/stats/rest/en/season`
 }
 ```
 
-### Game data for a whole season
+#### Game data for a whole season
 
 Creation of a method `get_games_data` in the `ApiClient` class to fetch the data for a whole season.
 This stores every game data in the cache.
@@ -99,3 +106,13 @@ https://api-web.nhle.com/v1/gamecenter/2020030001/play-by-play returns a 404.
 2. This endpoint has some issues, series letter are not always the same and the sum of the wins mismatch the game numbers.
 3. Found a better endpoint: https://api-web.nhle.com/v1/playoff-series/carousel/20232024/
 
+
+#### Usage of the Playoff carrousel API to dynamically retrieve the games count in a specific series
+
+Finding the number of games in a series was not trivial. This can be from 4 to 7 games.
+
+Based on [this endpoint](https://api-web.nhle.com/v1/playoff-series/carousel/20232024/) we can find this information.
+First, in order to find the right series, we have to define the letter of hte series from the round and the series index.
+Then,  we had to add the wins of each team to find the number of games played.
+From this, we can find the number of games left to play.
+We are now able to generate all the game numbers for playoffs.
