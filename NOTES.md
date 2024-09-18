@@ -116,3 +116,8 @@ First, in order to find the right series, we have to define the letter of hte se
 Then,  we had to add the wins of each team to find the number of games played.
 From this, we can find the number of games left to play.
 We are now able to generate all the game numbers for playoffs.
+
+### Raw data storage
+
+At the end of the fetching process, the data is stored in the dump. One file per season.
+An helper function `load_raw_games_data` is created to load the data from the dump (every or one season).
