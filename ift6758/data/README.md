@@ -68,7 +68,7 @@ cache_path = os.path.dirname(os.path.abspath(__file__)) + "/storage/cache"
 cache = FileSystemCache(cache_path)
 
 dump_path = os.path.dirname(os.path.abspath(__file__)) + "/storage/dump"
-dump = FileSystemCache(cache_path)
+dump = FileSystemCache(dump_path)
 
 client = ApiClient(cache)
 

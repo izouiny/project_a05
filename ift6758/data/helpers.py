@@ -1,4 +1,6 @@
-from .api import (ApiClient, FileSystemCache, GameType)
+from .ApiClient import ApiClient
+from .FileSystemCache import FileSystemCache
+from .enums import GameType
 import os
 import json
 
