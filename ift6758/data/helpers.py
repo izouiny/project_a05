@@ -20,7 +20,7 @@ dump = FileSystemCache(dump_path)
 
 api_client = ApiClient(cache)
 
-all_seasons = range(2016, 2019) # range(2016, 2024)
+all_seasons = range(2016, 2024)
 game_types = [GameType.REGULAR, GameType.PLAYOFF]
 # -----------------------------------------------------------
 
