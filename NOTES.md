@@ -41,6 +41,10 @@ Creation of `FileSystemCache` class to store the fetched data in a local file. I
 We could imagine other Cache systems like a `RedisCache`, a `InMemoryCache`, etc.
 But for this project, the `FileSystemCache` is enough.
 
+#### Improvement
+
+Add method `fetch_from_url_and_cache` in `ApiClient` to avoid repetition of the same code.
+
 ### Usage of stats API to dynamically retrieve the game count in a season
 
 Here is a sample response from `https://api.nhle.com/stats/rest/en/season`
@@ -90,3 +94,8 @@ https://api-web.nhle.com/v1/gamecenter/2020030001/play-by-play returns a 404.
 
 > For playoff games, the 2nd digit of the specific number gives the round of the playoffs,
 > the 3rd digit specifies the matchup, and the 4th digit specifies the game (out of 7).
+
+1. Found information in this endpoint: https://api-web.nhle.com/v1/playoff-bracket/2022
+2. This endpoint has some issues, series letter are not always the same and the sum of the wins mismatch the game numbers.
+3. Found a better endpoint: https://api-web.nhle.com/v1/playoff-series/carousel/20232024/
+
