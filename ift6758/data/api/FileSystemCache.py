@@ -43,7 +43,6 @@ class FileSystemCache(Cache):
     def clear(self) -> None:
         shutil.rmtree(self.base_path, ignore_errors=True)
 
-
     def get_file_path_for_key(self, key: str) -> str:
         return self.base_path + "/" + key + ".json"
 
