@@ -47,7 +47,7 @@ class ApiClient:
         """
         self.cache = cache
 
-    def get_games_data(self, season: int, game_types: list[str]) -> list[object] :
+    def get_games_data(self, season: int, game_types: list[str]) -> list[dict] :
         """
         Get data from an entire season.
         This methods will request the API a lot of time.

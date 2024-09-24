@@ -44,7 +44,7 @@ clear_cache()
 
 You can also delete the folder `ift6758/data/storage/cache`.
 
-#### Load data
+#### Load raw data
 
 This will load the data from the dump.
 Function `fetch_all_seasons_games_data` must have been called before.
@@ -57,10 +57,21 @@ data_2020 = load_raw_games_data(2020)
 all_data = load_raw_games_data()
 ```
 
+#### Load flattened data in a DataFrame
+
+This will load the data from the dump and flatten it in a DataFrame.
+
+```python
+from ift6758.data import load_events_dataframe
+
+df_2020 = load_events_dataframe(2020)
+df_all = load_events_dataframe()
+```
+
 ### Advanced usage
 
 ```python
-from ift6758.data import (ApiClient, FileSystemCache, GameType)
+from ift6758.data import (ApiClient, FileSystemCache, DataTransformer, GameType)
 import os
 import json
 
@@ -72,6 +83,10 @@ dump = FileSystemCache(dump_path)
 
 client = ApiClient(cache)
 
+data_transformer = DataTransformer()
+
 data = client.get_games_data(2020, [GameType.REGULAR, GameType.PLAYOFF])
 dump.set("2020", json.dumps(data, indent=2))
+
+df = data_transformer.flatten_raw_data(data)
 ```
