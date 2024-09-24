@@ -1,4 +1,7 @@
+import pandas as pd
+
 from .ApiClient import ApiClient
+from .DataTransformer import DataTransformer
 from .FileSystemCache import FileSystemCache
 from .enums import GameType
 import os
@@ -19,6 +22,8 @@ dump_path = os.environ.get(
 dump = FileSystemCache(dump_path)
 
 api_client = ApiClient(cache)
+
+data_transformer = DataTransformer()
 
 all_seasons = range(2016, 2024)
 game_types = [GameType.REGULAR, GameType.PLAYOFF]
@@ -42,7 +47,7 @@ def clear_cache() -> None:
     """
     cache.clear()
 
-def load_raw_games_data(season: int | None = None) -> list[object]:
+def load_raw_games_data(season: int | None = None) -> list[dict]:
     """
     This method load data from one specific season or all seasons
     """
@@ -60,4 +65,12 @@ def load_raw_games_data(season: int | None = None) -> list[object]:
     if data is None:
         return []
     return json.loads(data)
+
+def load_events_dataframe(season: int | None = None) -> pd.DataFrame:
+    """
+    Loads raw data and flatten plays
+    """
+    raw_data = load_raw_games_data(season)
+
+    return data_transformer.flatten_raw_data(raw_data)
 # -----------------------------------------------------------

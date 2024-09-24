@@ -120,4 +120,15 @@ We are now able to generate all the game numbers for playoffs.
 ### Raw data storage
 
 At the end of the fetching process, the data is stored in the dump. One file per season.
-An helper function `load_raw_games_data` is created to load the data from the dump (every or one season).
+A helper function `load_raw_games_data` is created to load the data from the dump (every or one season).
+
+## 2. Data processing
+
+### Convert raw data to a DataFrame
+
+Add a helper class `DataTransformer` that flatten all games events and filter events of type `shot-on-goal` and `goal`.
+It should be used with the `load_plays_dataframe` function.
+
+Improvements:
+- Add to team id of each player. 
+- Avoid searching multiple times in the same nested object.
