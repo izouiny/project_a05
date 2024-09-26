@@ -9,20 +9,28 @@ class DataTransformer:
     play_types = ("shot-on-goal", "goal")
 
 
-    def flatten_raw_data(self, input: list[dict]) -> pd.DataFrame :
+    def flatten_raw_data_as_dataframe(self, games: list[dict]) -> pd.DataFrame :
+        """
+        Convert records into a dataframe
+        """
+        events = self.flatten_raw_data_as_records(games)
+
+        return pd.DataFrame.from_records(events)
+
+    def flatten_raw_data_as_records(self, games: list[dict]) -> list[dict] :
         """
         Get data from an entire season.
         This methods will request the API a lot of time.
         """
         events = list()
 
-        for game in input:
+        for game in games:
             rows = self.flatten_game(game)
             events.extend(rows)
 
         print(f"Found {len(events)} events")
 
-        return pd.DataFrame.from_records(events)
+        return events
 
     def flatten_game(self, game_data: dict) -> list[dict]:
         """

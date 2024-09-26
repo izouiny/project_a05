@@ -66,11 +66,19 @@ def load_raw_games_data(season: int | None = None) -> list[dict]:
         return []
     return json.loads(data)
 
+def load_events_records(season: int | None = None) -> list[dict]:
+    """
+    Loads raw data and flatten plays as json records
+    """
+    raw_data = load_raw_games_data(season)
+
+    return data_transformer.flatten_raw_data_as_records(raw_data)
+
 def load_events_dataframe(season: int | None = None) -> pd.DataFrame:
     """
     Loads raw data and flatten plays
     """
     raw_data = load_raw_games_data(season)
 
-    return data_transformer.flatten_raw_data(raw_data)
+    return data_transformer.flatten_raw_data_as_dataframe(raw_data)
 # -----------------------------------------------------------

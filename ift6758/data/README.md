@@ -57,6 +57,17 @@ data_2020 = load_raw_games_data(2020)
 all_data = load_raw_games_data()
 ```
 
+#### Load flattened data in a list of records
+
+This will load the data from the dump and flatten it in a list of records.
+
+```python
+from ift6758.data import load_events_records
+
+df_2020 = load_events_records(2020)
+df_all = load_events_records()
+```
+
 #### Load flattened data in a DataFrame
 
 This will load the data from the dump and flatten it in a DataFrame.
@@ -88,5 +99,6 @@ data_transformer = DataTransformer()
 data = client.get_games_data(2020, [GameType.REGULAR, GameType.PLAYOFF])
 dump.set("2020", json.dumps(data, indent=2))
 
-df = data_transformer.flatten_raw_data(data)
+df = data_transformer.flatten_raw_data_as_dataframe(data)
+records = data_transformer.flatten_raw_data_as_records(data)
 ```
