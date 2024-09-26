@@ -101,11 +101,11 @@ class DataTransformer:
             assist2_player = player_details(details.get("assist2PlayerId"), 'assist2_player')
 
             # Get the root properties
-            period = play.get("period", {})
+            period = play.get("periodDescriptor", {})
             event_props = {
                 'event_id': play.get("eventId"),
                 'period_number': period.get("number"),
-                'period_type': period.get("type"),
+                'period_type': period.get("periodType"),
                 'time_in_period': play.get("timeInPeriod"),
                 'time_remaining': play.get("timeRemaining"),
                 'situation_code': play.get("situationCode"),
