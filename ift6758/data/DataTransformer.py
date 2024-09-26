@@ -83,10 +83,10 @@ class DataTransformer:
         plays = game_data.get("plays", [])
         events = list()
 
-        for play in plays:
+        for index, play in enumerate(plays):
             # Get play type and quit if not in the list
-            type = play.get("typeDescKey")
-            if type not in self.play_types:
+            play_type = play.get("typeDescKey")
+            if play_type not in self.play_types:
                 continue
 
             # Get details once
@@ -100,10 +100,19 @@ class DataTransformer:
             assist1_player = player_details(details.get("assist1PlayerId"), 'assist1_player')
             assist2_player = player_details(details.get("assist2PlayerId"), 'assist2_player')
 
+            # Describe the event
+            if play_type == "goal":
+                description = f"{scoring_player.get('scoring_player_name')} scores a goal"
+            elif play_type == "shot-on-goal":
+                description = f"{goalie_in_net.get('goalie_in_net_name')} stops a shot from {shooting_player.get('shooting_player_name')}"
+            else:
+                description = "Unknown event"
+
             # Get the root properties
             period = play.get("periodDescriptor", {})
             event_props = {
                 'event_id': play.get("eventId"),
+                'event_idx': index,
                 'period_number': period.get("number"),
                 'period_type': period.get("periodType"),
                 'time_in_period': play.get("timeInPeriod"),
@@ -118,6 +127,7 @@ class DataTransformer:
                 'y_coord': details.get("yCoord"),
                 'zone_code': details.get("zoneCode"),
                 'shot_type': details.get("shotType"),
+                'description': description,
                 'event_owner_team_id': details.get("eventOwnerTeamId"),
             }
 
