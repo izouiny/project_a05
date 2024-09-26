@@ -18,6 +18,18 @@ At the end of the fetching process, you may want to clear the cache to free some
 Dump is stored in the `ift6758/data/storage/dump` folder.
 This can be changed with the `DUMP_PATH` environment variable.
 
+## Data acquisition pipeline
+
+```mermaid
+graph TD
+    A[Trigger 'get season data'] --> B
+    B[Compute all game ids in the season] -- One request per game --> C
+    C[NHL Api] -- Returns JSON --> D
+    D[Cache every request in a JSON file \n in storage/cache folder] --> E
+    E[Concatenate all games in a single list] -- Store in JSON file in storage/dump folder --> F
+    F[Flatten data and enrich JSON data] --> G[Convert to DataFrame]
+```
+
 ## Examples
 
 ### Basic usage
