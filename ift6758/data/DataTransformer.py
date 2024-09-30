@@ -113,14 +113,24 @@ class DataTransformer:
             event_props = {
                 'event_id': play.get("eventId"),
                 'event_idx': index,
+                'sort_order': play.get("sortOrder"),
+
                 'period_number': period.get("number"),
                 'period_type': period.get("periodType"),
+                'max_regulation_periods': period.get("maxRegulationPeriods"),
+
                 'time_in_period': play.get("timeInPeriod"),
                 'time_remaining': play.get("timeRemaining"),
                 'situation_code': play.get("situationCode"),
+
                 'type_code': play.get("typeCode"),
                 'type_desc_key': play.get("typeDescKey"),
-                'sort_order': play.get("sortOrder"),
+
+                'away_score': details.get("awayScore"),
+                'home_score': details.get("homeScore"),
+
+                'away_sog': details.get("awaySOG"),
+                'home_sog': details.get("homeSOG"),
 
                 # Details
                 'x_coord': details.get("xCoord"),
@@ -129,6 +139,10 @@ class DataTransformer:
                 'shot_type': details.get("shotType"),
                 'description': description,
                 'event_owner_team_id': details.get("eventOwnerTeamId"),
+
+                'scoring_player_total': details.get("scoringPlayerTotal"),
+                'assist1_player_total': details.get("assist1PlayerTotal"),
+                'assist2_player_total': details.get("assist2PlayerTotal"),
             }
 
             events.append({
