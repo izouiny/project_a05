@@ -9,20 +9,28 @@ class DataTransformer:
     play_types = ("shot-on-goal", "goal")
 
 
-    def flatten_raw_data(self, input: list[dict]) -> pd.DataFrame :
+    def flatten_raw_data_as_dataframe(self, games: list[dict]) -> pd.DataFrame :
+        """
+        Convert records into a dataframe
+        """
+        events = self.flatten_raw_data_as_records(games)
+
+        return pd.DataFrame.from_records(events)
+
+    def flatten_raw_data_as_records(self, games: list[dict]) -> list[dict] :
         """
         Get data from an entire season.
         This methods will request the API a lot of time.
         """
         events = list()
 
-        for game in input:
+        for game in games:
             rows = self.flatten_game(game)
             events.extend(rows)
 
         print(f"Found {len(events)} events")
 
-        return pd.DataFrame.from_records(events)
+        return events
 
     def flatten_game(self, game_data: dict) -> list[dict]:
         """
@@ -75,10 +83,10 @@ class DataTransformer:
         plays = game_data.get("plays", [])
         events = list()
 
-        for play in plays:
+        for index, play in enumerate(plays):
             # Get play type and quit if not in the list
-            type = play.get("typeDescKey")
-            if type not in self.play_types:
+            play_type = play.get("typeDescKey")
+            if play_type not in self.play_types:
                 continue
 
             # Get details once
@@ -92,25 +100,49 @@ class DataTransformer:
             assist1_player = player_details(details.get("assist1PlayerId"), 'assist1_player')
             assist2_player = player_details(details.get("assist2PlayerId"), 'assist2_player')
 
+            # Describe the event
+            if play_type == "goal":
+                description = f"{scoring_player.get('scoring_player_name')} scores a goal"
+            elif play_type == "shot-on-goal":
+                description = f"{goalie_in_net.get('goalie_in_net_name')} stops a shot from {shooting_player.get('shooting_player_name')}"
+            else:
+                description = "Unknown event"
+
             # Get the root properties
-            period = play.get("period", {})
+            period = play.get("periodDescriptor", {})
             event_props = {
                 'event_id': play.get("eventId"),
+                'event_idx': index,
+                'sort_order': play.get("sortOrder"),
+
                 'period_number': period.get("number"),
-                'period_type': period.get("type"),
+                'period_type': period.get("periodType"),
+                'max_regulation_periods': period.get("maxRegulationPeriods"),
+
                 'time_in_period': play.get("timeInPeriod"),
                 'time_remaining': play.get("timeRemaining"),
                 'situation_code': play.get("situationCode"),
+
                 'type_code': play.get("typeCode"),
                 'type_desc_key': play.get("typeDescKey"),
-                'sort_order': play.get("sortOrder"),
+
+                'away_score': details.get("awayScore"),
+                'home_score': details.get("homeScore"),
+
+                'away_sog': details.get("awaySOG"),
+                'home_sog': details.get("homeSOG"),
 
                 # Details
                 'x_coord': details.get("xCoord"),
                 'y_coord': details.get("yCoord"),
                 'zone_code': details.get("zoneCode"),
                 'shot_type': details.get("shotType"),
+                'description': description,
                 'event_owner_team_id': details.get("eventOwnerTeamId"),
+
+                'scoring_player_total': details.get("scoringPlayerTotal"),
+                'assist1_player_total': details.get("assist1PlayerTotal"),
+                'assist2_player_total': details.get("assist2PlayerTotal"),
             }
 
             events.append({
