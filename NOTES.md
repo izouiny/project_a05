@@ -132,3 +132,13 @@ It should be used with the `load_plays_dataframe` function.
 Improvements:
 - Add to team id of each player. 
 - Avoid searching multiple times in the same nested object.
+
+
+## Ilias (notes)
+
+### Outil interactif
+- Aller chercher les noms des joueurs, print le json extrait de l'API, Faire match l'image avec les coordonées.
+
+### Data Cleaning
+- On garde pas les colonnes comme event_owner_team_id et type_code ni ID des joueurs car OHE pour prochains milestone
+- avec situation_code et les home et away team, il est possible de faire cela
