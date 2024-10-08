@@ -1,7 +1,7 @@
 import math
 
-goal_x_coord = 95 # Todo: Find the real value
-goal_y_coord = 0 # Todo: Find the real value
+goal_x_coord = 89 # Based on https://www.hockeymanitoba.ca/wp-content/uploads/2013/03/Rink-Marking-Diagrams.pdf
+goal_y_coord = 0
 
 # Helper from https://www.geeksforgeeks.org/how-to-compute-the-angle-between-vectors-using-python/
 def angle_between_vectors(u, v):
@@ -39,7 +39,7 @@ class GoalPositionHelper:
 
         self.home_team_side = self.guess_ice_side_for_home_team_during_first_period()
 
-    def distance_and_angle_to_adverse_goal(self, event: dict) -> (float, float):
+    def get_player_to_goal_details(self, event: dict) -> dict:
         """
         Get the distance to the adverse goal for the event
         """
@@ -63,7 +63,20 @@ class GoalPositionHelper:
         # 90 -> the event is on the right of the goal
         angle_rad, angle_deg = angle_between_vectors(goal_to_event, goal_to_center)
 
-        return distance, angle_deg
+        # Denotes if the player is on the right or left side of the goal
+        factor = goal_to_event[0] * goal_to_event[1]
+        if factor > 0: # x and y have the same sign
+            goal_side = "right"
+        if factor < 0: # x and y have different signs
+            goal_side = "left"
+        if factor == 0: # x or y is 0
+            goal_side = "center"
+
+        return {
+            "goal_distance": distance,
+            "goal_angle": angle_deg,
+            "goal_side": goal_side
+        }
 
     def get_adverse_goal_position(self, event: dict) -> (int, int):
         """
@@ -197,4 +210,4 @@ if __name__ == "__main__":
         print("-----------------------------")
         print(f"Team: {event['details']['eventOwnerTeamId']}, Coord: {event['details']['xCoord']} {event['details']['yCoord']}, Period {event['periodDescriptor']['number']}")
         print("Adverse goal positon", helper.get_adverse_goal_position(event))
-        print("Distance and angle", helper.distance_and_angle_to_adverse_goal(event))
+        print("Distance and angle", helper.get_player_to_goal_details(event))
