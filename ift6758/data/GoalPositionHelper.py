@@ -1,6 +1,6 @@
 import math
 
-goal_x_coord = 5 # Todo: Find the real value
+goal_x_coord = 95 # Todo: Find the real value
 goal_y_coord = 0 # Todo: Find the real value
 
 # Helper from https://www.geeksforgeeks.org/how-to-compute-the-angle-between-vectors-using-python/
@@ -161,6 +161,40 @@ def get_goal_position_helper(game_data: dict) -> GoalPositionHelper:
         return get_goal_position_helpers_cache[game_id]
     else:
         helper = GoalPositionHelper(game_data)
-        helper.analyse_game_data()
         get_goal_position_helpers_cache[game_id] = helper
         return helper
+
+# Unit Tests
+if __name__ == "__main__":
+    game_data = {
+        "id": 1,
+        "awayTeam": {"id": 10},
+        "homeTeam": {"id": 20},
+        "plays": [
+            {"details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": 10, "yCoord": 12}, "periodDescriptor": {"number": 1}},
+            {"details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -10, "yCoord": -12}, "periodDescriptor": {"number": 1}},
+            {"details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord, "yCoord": 12}, "periodDescriptor": {"number": 1}},
+            {"details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord, "yCoord": -12}, "periodDescriptor": {"number": 1}},
+            {"details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord, "yCoord": 12}, "periodDescriptor": {"number": 1}},
+            {"details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord, "yCoord": -12}, "periodDescriptor": {"number": 1}},
+            {"details": {"zoneCode": "D", "eventOwnerTeamId": 10, "xCoord": 10, "yCoord": -24}, "periodDescriptor": {"number": 2}},
+            {"details": {"zoneCode": "D", "eventOwnerTeamId": 20, "xCoord": -10, "yCoord": -24}, "periodDescriptor": {"number": 2}},
+            {"details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": 10, "yCoord": goal_y_coord}, "periodDescriptor": {"number": 3}},
+            {"details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -10, "yCoord": goal_y_coord}, "periodDescriptor": {"number": 3}},
+            {"details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord + 5 , "yCoord": 12}, "periodDescriptor": {"number": 3}},
+            {"details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord + 5, "yCoord": -12}, "periodDescriptor": {"number": 3}},
+            {"details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord - 5, "yCoord": 12}, "periodDescriptor": {"number": 3}},
+            {"details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord - 5, "yCoord": -12}, "periodDescriptor": {"number": 3}},
+        ]
+    }
+    helper = get_goal_position_helper(game_data)
+    print(helper.get_home_team_side_for_period(1)) # left
+    print(helper.get_home_team_side_for_period(2)) # right
+    print(helper.get_home_team_side_for_period(3)) # left
+
+    events = game_data["plays"]
+    for event in events:
+        print("-----------------------------")
+        print(f"Team: {event['details']['eventOwnerTeamId']}, Coord: {event['details']['xCoord']} {event['details']['yCoord']}, Period {event['periodDescriptor']['number']}")
+        print("Adverse goal positon", helper.get_adverse_goal_position(event))
+        print("Distance and angle", helper.distance_and_angle_to_adverse_goal(event))
