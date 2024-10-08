@@ -154,3 +154,5 @@ This approach ensures that the side of the home team is dynamically calculated b
 From this, we are able to get the adversary side and the goal position for each event.
 
 Now we can compute the distance and the angle to the goal for each event.
+
+![player_to_goal.png](player_to_goal.png)
