@@ -132,3 +132,27 @@ It should be used with the `load_plays_dataframe` function.
 Improvements:
 - Add to team id of each player. 
 - Avoid searching multiple times in the same nested object.
+
+### Compute goal position
+
+The side of the home team is calculated using the following steps:
+
+1. **Guessing the Home Team Side for the First Period**:
+   - The first relevant event is an event in the "plays" list that has `details.zoneCode` as 'O' (Offensive) or 'D' (Defensive).
+   - Based on the `details` of this event (such as `xCoord`, `zoneCode`, `eventOwnerTeamId`, and `periodDescriptor.number`), the side of the home team is determined.
+   - If the event is in the defensive zone ('D') for the home team, the side is determined by the `xCoord` value (left if `xCoord` < 0, right if `xCoord` > 0).
+   - If the event is in the offensive zone ('O') for the home team, the side is determined by the `xCoord` value (left if `xCoord` > 0, right if `xCoord` < 0).
+   - If the period is even, the side is inverted using the `invert_side` method.
+
+2. **Determining the Home Team Side for Any Period**:
+   - The `get_home_team_side_for_period` method is used to get the side of the home team for a given period.
+   - If the period is even, the side is inverted using the `invert_side` method.
+   - Otherwise, the side remains the same as determined for the first period.
+
+This approach ensures that the side of the home team is dynamically calculated based on the game events and the period.
+
+From this, we are able to get the adversary side and the goal position for each event.
+
+Now we can compute the distance and the angle to the goal for each event.
+
+![player_to_goal.png](player_to_goal.png)
