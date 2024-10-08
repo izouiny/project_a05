@@ -1,4 +1,5 @@
 import pandas as pd
+from .GoalPositionHelper import get_goal_position_helper
 
 class DataTransformer:
 
@@ -83,6 +84,9 @@ class DataTransformer:
         plays = game_data.get("plays", [])
         events = list()
 
+        # Create a helper to get goal position details
+        goal_position_helper = get_goal_position_helper(game_data)
+
         for index, play in enumerate(plays):
             # Get play type and quit if not in the list
             play_type = play.get("typeDescKey")
@@ -145,6 +149,9 @@ class DataTransformer:
                 'assist2_player_total': details.get("assist2PlayerTotal"),
             }
 
+            # Get the goal position details
+            goal_position_details = goal_position_helper.get_player_to_goal_details(play)
+
             events.append({
                 **root_props,
                 **event_props,
@@ -153,6 +160,7 @@ class DataTransformer:
                 **scoring_player,
                 **assist1_player,
                 **assist2_player,
+                **goal_position_details,
             })
 
         return events

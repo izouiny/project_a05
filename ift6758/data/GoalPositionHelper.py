@@ -171,8 +171,10 @@ def get_goal_position_helper(game_data: dict) -> GoalPositionHelper:
     """
     game_id = game_data.get("id")
     if game_id in get_goal_position_helpers_cache:
+        # print(f"Cache hit for game {game_id}")
         return get_goal_position_helpers_cache[game_id]
     else:
+        # print(f"Cache miss for game {game_id}")
         helper = GoalPositionHelper(game_data)
         get_goal_position_helpers_cache[game_id] = helper
         return helper
