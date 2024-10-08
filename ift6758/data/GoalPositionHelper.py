@@ -75,7 +75,8 @@ class GoalPositionHelper:
         return {
             "goal_distance": distance,
             "goal_angle": angle_deg,
-            "goal_side": goal_side
+            "goal_side": goal_side,
+            "goal_x_coord": x_goal,
         }
 
     def get_adverse_goal_position(self, event: dict) -> (int, int):
