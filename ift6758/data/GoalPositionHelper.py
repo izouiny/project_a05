@@ -164,9 +164,10 @@ class GoalPositionHelper:
         """
         events = self.game_data.get("plays", [])
         for event in events:
-            details = event.get("details", {})
-            if details.get("zoneCode") in ['O', 'D']:
-                return event
+            if event.get("typeDescKey") in ["shot-on-goal", "goal", "missed-shot"]:
+                details = event.get("details", {})
+                if details.get("zoneCode") in ['O', 'D']:
+                    return event
         return None
 
 
@@ -196,20 +197,20 @@ if __name__ == "__main__":
         "awayTeam": {"id": 10},
         "homeTeam": {"id": 20},
         "plays": [
-            {"details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": 10, "yCoord": 12}, "periodDescriptor": {"number": 1}},
-            {"details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -10, "yCoord": -12}, "periodDescriptor": {"number": 1}},
-            {"details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord, "yCoord": 12}, "periodDescriptor": {"number": 1}},
-            {"details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord, "yCoord": -12}, "periodDescriptor": {"number": 1}},
-            {"details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord, "yCoord": 12}, "periodDescriptor": {"number": 1}},
-            {"details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord, "yCoord": -12}, "periodDescriptor": {"number": 1}},
-            {"details": {"zoneCode": "D", "eventOwnerTeamId": 10, "xCoord": 10, "yCoord": -24}, "periodDescriptor": {"number": 2}},
-            {"details": {"zoneCode": "D", "eventOwnerTeamId": 20, "xCoord": -10, "yCoord": -24}, "periodDescriptor": {"number": 2}},
-            {"details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": 10, "yCoord": goal_y_coord}, "periodDescriptor": {"number": 3}},
-            {"details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -10, "yCoord": goal_y_coord}, "periodDescriptor": {"number": 3}},
-            {"details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord + 5 , "yCoord": 12}, "periodDescriptor": {"number": 3}},
-            {"details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord + 5, "yCoord": -12}, "periodDescriptor": {"number": 3}},
-            {"details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord - 5, "yCoord": 12}, "periodDescriptor": {"number": 3}},
-            {"details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord - 5, "yCoord": -12}, "periodDescriptor": {"number": 3}},
+            {"typeDescKey": "goal", "details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": 10, "yCoord": 12}, "periodDescriptor": {"number": 1}},
+            {"typeDescKey": "goal", "details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -10, "yCoord": -12}, "periodDescriptor": {"number": 1}},
+            {"typeDescKey": "shot-on-goal", "details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord, "yCoord": 12}, "periodDescriptor": {"number": 1}},
+            {"typeDescKey": "shot-on-goal", "details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord, "yCoord": -12}, "periodDescriptor": {"number": 1}},
+            {"typeDescKey": "shot-on-goal", "details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord, "yCoord": 12}, "periodDescriptor": {"number": 1}},
+            {"typeDescKey": "shot-on-goal", "details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord, "yCoord": -12}, "periodDescriptor": {"number": 1}},
+            {"typeDescKey": "shot-on-goal", "details": {"zoneCode": "D", "eventOwnerTeamId": 10, "xCoord": 10, "yCoord": -24}, "periodDescriptor": {"number": 2}},
+            {"typeDescKey": "shot-on-goal", "details": {"zoneCode": "D", "eventOwnerTeamId": 20, "xCoord": -10, "yCoord": -24}, "periodDescriptor": {"number": 2}},
+            {"typeDescKey": "missed-shot", "details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": 10, "yCoord": goal_y_coord}, "periodDescriptor": {"number": 3}},
+            {"typeDescKey": "missed-shot", "details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -10, "yCoord": goal_y_coord}, "periodDescriptor": {"number": 3}},
+            {"typeDescKey": "missed-shot", "details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord + 5 , "yCoord": 12}, "periodDescriptor": {"number": 3}},
+            {"typeDescKey": "missed-shot", "details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord + 5, "yCoord": -12}, "periodDescriptor": {"number": 3}},
+            {"typeDescKey": "missed-shot", "details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord - 5, "yCoord": 12}, "periodDescriptor": {"number": 3}},
+            {"typeDescKey": "missed-shot", "details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord - 5, "yCoord": -12}, "periodDescriptor": {"number": 3}},
         ]
     }
     helper = get_goal_position_helper(game_data)
