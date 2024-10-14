@@ -156,3 +156,37 @@ From this, we are able to get the adversary side and the goal position for each 
 Now we can compute the distance and the angle to the goal for each event.
 
 ![player_to_goal.png](player_to_goal.png)
+
+#### Issue with the `blocked-shot` events
+
+In case of a `blocked-shot` event, the `eventOwnerTeamId` is the team that initiated the shot, not the team that blocked it.
+But the coordinates are the ones from the blocking player.
+Therefore, it inverts the side of the home team.
+We decided to consider only `shot-on-goal`, `missed-shot` and `goal` events to compute the home team side.
+
+`blocked-shot` event example:
+
+```json
+{
+   "eventId": 53,
+   "periodDescriptor": {
+     "number": 1,
+     "periodType": "REG",
+     "maxRegulationPeriods": 3
+   },
+   "timeInPeriod": "00:15",
+   "timeRemaining": "19:45",
+   "situationCode": "1551",
+   "typeCode": 508,
+   "typeDescKey": "blocked-shot",
+   "sortOrder": 7,
+   "details": {
+     "xCoord": -75,
+     "yCoord": 9,
+     "zoneCode": "D",
+     "blockingPlayerId": 8475233,
+     "shootingPlayerId": 8474027,
+     "eventOwnerTeamId": 28
+   }
+}
+```
