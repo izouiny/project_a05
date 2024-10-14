@@ -198,4 +198,4 @@ def get_adv_visuals(year: int):
     return
 
 
-get_adv_visuals(2020)
+get_adv_visuals(2019)
