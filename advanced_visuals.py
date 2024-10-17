@@ -11,6 +11,7 @@ from matplotlib.ticker import FormatStrFormatter
 import plotly.graph_objects as go
 import plotly.express as px
 import base64
+from skimage.transform import resize
 
 # The main function for advanced visuals is 'get_adv_visuals(year, visual)' where year is an int in between 2016 and
 # 2020 and visual is a string in ["pyplot", "plotly"] to indicate which package to use for visualization (only plotly
@@ -197,7 +198,7 @@ def get_adv_visuals(year: int, visual):
             plt.imshow(img)
             visu = plt.contourf(X, Y, smoothed_rate, levels=levels, cmap=cmap, norm=norm, alpha=0.8)
             cbar = plt.colorbar(visu, ticks=levels, format='%.5f')
-            cbar.ax.set_ylabel('Shot Rate Difference per Hour')
+            cbar.ax.set_ylabel('Gaussian filter on shot rate differences per hour')
             tick_locs = (levels[:-1] + levels[1:]) / 2
             cbar.set_ticks(tick_locs)
             plt.title(str(team) + ' - ' + str(year) + '\n' + 'Shot rate difference with the mean of the league')
@@ -224,12 +225,13 @@ def get_adv_visuals(year: int, visual):
 
         # Colorbar initialization
         cbar = dict(tickvals=levels_values, ticktext=[f"{level:.5f}" for level in levels_values],
-            yanchor='middle', title='Shot rate difference per hour', titleside='right')
+            yanchor='middle', title='Gaussian filter on shot rate differences per hour', titleside='right')
         buttons = []
 
         for i in range(len(final_rates)):
             team = list(teams_dict.keys())[i]
             smoothed_rate = smoothed_rates[i]
+            smoothed_rate_resized = resize(smoothed_rate, (117, 138))  # Resize so the file is a lot lighter
             title = '(' + str(team) + ' - ' + str(year) + ') ' + 'Shot rate difference with the mean of the league'
 
             if i == 0:
@@ -239,7 +241,7 @@ def get_adv_visuals(year: int, visual):
                 visible = False
 
             # Add contour for each team
-            fig.add_trace(go.Contour(z=smoothed_rate, contours=contours, name=team, opacity=0.5, line_smoothing=0.85,
+            fig.add_trace(go.Contour(z=smoothed_rate_resized, contours=contours, name=team, opacity=0.5,
                                      colorscale='RdBu', reversescale=True, visible = visible, colorbar=cbar))
 
             # Add button for each team
@@ -253,11 +255,12 @@ def get_adv_visuals(year: int, visual):
                           xaxis=dict(showticklabels=False, ticks='', showgrid=False))
         # Background image and size of the figure
         fig.update_layout(images=[dict(source=f"data:image/png;base64,{encoded_image}", xref="x", yref="y", x=0, y=0,
-                                       sizex=550, sizey=467, sizing="stretch", opacity=1, layer="below")],
-                          width=550, height=467,)
+                                       sizex=138, sizey=117, sizing="stretch", opacity=1, layer="below")],
+                          width=550, height=467, )
+
         # Title of figure
         fig.update_layout(title={'text': first_title, 'font': {'size': 10}})
-        fig.write_html(filepath)
+        fig.write_html(filepath, include_plotlyjs="cdn")
 
     return
 
