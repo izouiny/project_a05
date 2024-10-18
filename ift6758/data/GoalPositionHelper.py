@@ -8,6 +8,8 @@ def angle_between_vectors(u, v):
     dot_product = sum(i*j for i, j in zip(u, v))
     norm_u = math.sqrt(sum(i**2 for i in u))
     norm_v = math.sqrt(sum(i**2 for i in v))
+    if norm_u == 0 or norm_v == 0:
+        return 0, 0
     cos_theta = dot_product / (norm_u * norm_v)
     angle_rad = math.acos(cos_theta)
     angle_deg = math.degrees(angle_rad)
@@ -45,12 +47,22 @@ class GoalPositionHelper:
         """
         x_goal, y_goal = self.get_adverse_goal_position(event)
 
+        fallback = {
+            "goal_distance": None,
+            "goal_angle": None,
+            "goal_side": None,
+            "goal_x_coord": x_goal,
+        }
+
         if x_goal is None or y_goal is None:
-            return None
+            return fallback
 
         details = event.get("details", {})
         x_event = details.get("xCoord")
         y_event = details.get("yCoord")
+
+        if x_event is None or y_event is None:
+            return fallback
 
         distance = distance_between_points(x_event, y_event, x_goal, y_goal)
 
@@ -65,12 +77,11 @@ class GoalPositionHelper:
 
         # Denotes if the player is on the right or left side of the goal
         factor = goal_to_event[0] * goal_to_event[1]
+        goal_side = "center" # x or y is 0
         if factor > 0: # x and y have the same sign
             goal_side = "right"
-        if factor < 0: # x and y have different signs
+        elif factor < 0: # x and y have different signs
             goal_side = "left"
-        if factor == 0: # x or y is 0
-            goal_side = "center"
 
         return {
             "goal_distance": distance,
