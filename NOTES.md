@@ -203,6 +203,6 @@ There were about 2500 events over 647679 with this issue.
 
 Firstly, in order to find the right home team side, we now rely on several events to determine the side and vote for the
 most common side.
-This reduces the number of events with wrong side determination to 400.
+This reduces the number of events with wrong side determination to 550.
 
 We cannot fix the remaining events as we cannot determine which one from zoneCode or coordinate is wrong.
