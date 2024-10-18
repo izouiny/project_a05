@@ -48,9 +48,9 @@ class GoalPositionHelper:
         x_goal, y_goal = self.get_adverse_goal_position(event)
 
         fallback = {
-            "goal_distance": None,
-            "goal_angle": None,
-            "goal_side": None,
+            "goal_distance": 0,
+            "goal_angle": 0,
+            "goal_side": "center",
             "goal_x_coord": x_goal,
         }
 
@@ -78,7 +78,7 @@ class GoalPositionHelper:
         # Denotes if the player is on the right or left side of the goal
         factor = goal_to_event[0] * goal_to_event[1]
         goal_side = "center" # x or y is 0
-        if factor > 0: # x and y have the same sign
+        if factor > 0:  # x and y have the same sign
             goal_side = "right"
         elif factor < 0: # x and y have different signs
             goal_side = "left"
