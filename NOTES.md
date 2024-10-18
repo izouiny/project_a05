@@ -190,3 +190,19 @@ We decided to consider only `shot-on-goal`, `missed-shot` and `goal` events to c
    }
 }
 ```
+
+#### Issue with the goal position
+
+Some events may have wrong xCoord or zoneCode. It could lead to a wrong side determination.
+We added a test in the notebook to check if the side determination is correct.
+We can check when the event is zone Offensive or Defensive.
+If the side is **Offensive** and the `xCoord` and the `xGoal` are not the same sign, there is an issue.
+If the side is **Defensive** and the `xCoord` and the `xGoal` are the same sign, there is an issue.
+
+There were about 2500 events over 647679 with this issue.
+
+Firstly, in order to find the right home team side, we now rely on several events to determine the side and vote for the
+most common side.
+This reduces the number of events with wrong side determination to 400.
+
+We cannot fix the remaining events as we cannot determine which one from zoneCode or coordinate is wrong.

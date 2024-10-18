@@ -127,15 +127,34 @@ class GoalPositionHelper:
         return self.home_team_side
 
     def guess_ice_side_for_home_team_during_first_period(self) -> str | None:
-        first_event = self.find_first_relevant_event()
-        if first_event is None:
+        # Some events may have wrong xCoord or zoneCode.
+        # Therefore, we need to look at multiple events and vote to determine the side of the home team
+        first_events = self.find_first_relevant_events(65)
+
+        if len(first_events) == 0:
             return None
 
-        details = first_event.get("details", {})
+        left = 0
+        right = 0
+        for event in first_events:
+            side = self.guess_ice_side_for_home_team_during_first_period_for_event(event)
+            if side == "left":
+                left += 1
+            elif side == "right":
+                right += 1
+
+        return "left" if left > right else "right"
+
+    def guess_ice_side_for_home_team_during_first_period_for_event(self, event: dict) -> str | None:
+        details = event.get("details", {})
         x = details.get("xCoord")
         zone = details.get("zoneCode")
         event_owner_team_id = details.get("eventOwnerTeamId")
-        period = first_event.get("periodDescriptor", {}).get("number")
+        period = event.get("periodDescriptor", {}).get("number")
+
+        # xCoord may not be a number
+        if x is None:
+            return None
 
         is_home_team = event_owner_team_id == self.home_team
 
@@ -158,19 +177,22 @@ class GoalPositionHelper:
         else:
             return home_team_side
 
-    def find_first_relevant_event(self) -> dict | None:
+    def find_first_relevant_events(self, count = 5) -> list[dict]:
         """
-        This method will look for the first event in the "play" list that has details.zoneCode `O` or `D`.
+        This method will look for the first events in the "play" list that has details.zoneCode `O` or `D`.
         From there, thanks to details.eventOwnerTeamId, details.xCoord, details.yCoord and periodDescriptor.number
         we can determine on which side of the ice the team is playing.
         """
+        output = list()
         events = self.game_data.get("plays", [])
         for event in events:
             if event.get("typeDescKey") in ["shot-on-goal", "goal", "missed-shot"]:
                 details = event.get("details", {})
                 if details.get("zoneCode") in ['O', 'D']:
-                    return event
-        return None
+                    output.append(event)
+                    if len(output) >= count:
+                        return output
+        return output
 
 
 """
