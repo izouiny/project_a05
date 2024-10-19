@@ -6,6 +6,6 @@ setup(
     # package_dir={'': 'src'},
     version='0.1.0',
     description='IFT6758 Project for group A-05',
-    author='Elizaveta Sycheva, Ilias Zouine, Houda Fatih, Edouard Demotes-Mainard',
+    author='Phil Schoeb, Ilias Zouine, Thibault Maumy, Edouard Demotes-Mainard',
     license='',
 )
