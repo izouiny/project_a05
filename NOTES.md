@@ -206,3 +206,13 @@ most common side.
 This reduces the number of events with wrong side determination to 550.
 
 We cannot fix the remaining events as we cannot determine which one from zoneCode or coordinate is wrong.
+
+
+## Ilias (notes)
+
+### Outil interactif
+- Aller chercher les noms des joueurs, print le json extrait de l'API, Faire match l'image avec les coordonées.
+
+### Data Cleaning
+- On garde pas les colonnes comme event_owner_team_id et type_code ni ID des joueurs car OHE pour prochains milestone
+- avec situation_code et les home et away team, il est possible de faire cela
