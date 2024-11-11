@@ -81,4 +81,17 @@ def load_events_dataframe(season: int | None = None) -> pd.DataFrame:
     raw_data = load_raw_games_data(season)
 
     return data_transformer.flatten_raw_data_as_dataframe(raw_data)
+
+def load_train_test_dataframes() -> tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Train: seasons 2016 to 2019
+    Test: season 2020
+    """
+    df_2016 = load_events_dataframe(2016)
+    df_2017 = load_events_dataframe(2017)
+    df_2018 = load_events_dataframe(2018)
+    df_2019 = load_events_dataframe(2019)
+    df_2020 = load_events_dataframe(2020).drop(columns="is_goal")
+
+    return pd.concat([df_2016, df_2017, df_2018, df_2019]), df_2020
 # -----------------------------------------------------------
