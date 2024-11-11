@@ -1,5 +1,6 @@
 import pandas as pd
 from .GoalPositionHelper import get_goal_position_helper
+from .SituationCodeHelper import get_situation_code_helper
 
 class DataTransformer:
 
@@ -87,6 +88,9 @@ class DataTransformer:
         # Create a helper to get goal position details
         goal_position_helper = get_goal_position_helper(game_data)
 
+        # Create a helper to get situation code details
+        situation_code_helper = get_situation_code_helper(game_data)
+
         for index, play in enumerate(plays):
             # Get play type and quit if not in the list
             play_type = play.get("typeDescKey")
@@ -127,8 +131,11 @@ class DataTransformer:
                 'time_remaining': play.get("timeRemaining"),
                 'situation_code': play.get("situationCode"),
 
+                'is_empty_net': situation_code_helper.is_adverse_net_empty(play),
+                'is_goal': play_type == "goal",
+
                 'type_code': play.get("typeCode"),
-                'type_desc_key': play.get("typeDescKey"),
+                'type_desc_key': play_type,
 
                 'away_score': details.get("awayScore"),
                 'home_score': details.get("homeScore"),
