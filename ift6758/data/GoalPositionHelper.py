@@ -13,6 +13,9 @@ def angle_between_vectors(u, v):
     cos_theta = dot_product / (norm_u * norm_v)
     angle_rad = math.acos(cos_theta)
     angle_deg = math.degrees(angle_rad)
+    # Get the sign of the angle
+    if u[0] * v[1] - u[1] * v[0] < 0:
+        return -angle_rad, -angle_deg
     return angle_rad, angle_deg
 
 def distance_between_points(x1, y1, x2, y2):
@@ -72,15 +75,15 @@ class GoalPositionHelper:
         goal_to_center = (0 - x_goal, 0 - y_goal)
         # Angle between the two vectors
         # 0 -> the event is in front of the goal
+        # -90 -> the event is on the left of the goal
         # 90 -> the event is on the right of the goal
         angle_rad, angle_deg = angle_between_vectors(goal_to_event, goal_to_center)
 
         # Denotes if the player is on the right or left side of the goal
-        factor = goal_to_event[0] * goal_to_event[1]
-        goal_side = "center" # x or y is 0
-        if factor > 0:  # x and y have the same sign
+        goal_side = "center"
+        if angle_deg > 0:
             goal_side = "right"
-        elif factor < 0: # x and y have different signs
+        elif angle_deg < 0:
             goal_side = "left"
 
         return {
@@ -231,10 +234,24 @@ if __name__ == "__main__":
             {"typeDescKey": "shot-on-goal", "details": {"zoneCode": "D", "eventOwnerTeamId": 20, "xCoord": -10, "yCoord": -24}, "periodDescriptor": {"number": 2}},
             {"typeDescKey": "missed-shot", "details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": 10, "yCoord": goal_y_coord}, "periodDescriptor": {"number": 3}},
             {"typeDescKey": "missed-shot", "details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -10, "yCoord": goal_y_coord}, "periodDescriptor": {"number": 3}},
-            {"typeDescKey": "missed-shot", "details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord + 5 , "yCoord": 12}, "periodDescriptor": {"number": 3}},
-            {"typeDescKey": "missed-shot", "details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord + 5, "yCoord": -12}, "periodDescriptor": {"number": 3}},
-            {"typeDescKey": "missed-shot", "details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord - 5, "yCoord": 12}, "periodDescriptor": {"number": 3}},
-            {"typeDescKey": "missed-shot", "details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord - 5, "yCoord": -12}, "periodDescriptor": {"number": 3}},
+            {"typeDescKey": "missed-shot", "details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord - 5, "yCoord": 12}, "periodDescriptor": {"number": 3}},
+            {"typeDescKey": "missed-shot", "details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord - 5, "yCoord": -12}, "periodDescriptor": {"number": 3}},
+            {"typeDescKey": "missed-shot", "details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord + 5, "yCoord": 12}, "periodDescriptor": {"number": 3}},
+            {"typeDescKey": "missed-shot", "details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord + 5, "yCoord": -12}, "periodDescriptor": {"number": 3}},
+
+            {"typeDescKey": "missed-shot",
+             "details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord + 5, "yCoord": 12},
+             "periodDescriptor": {"number": 3}},
+            {"typeDescKey": "missed-shot",
+             "details": {"zoneCode": "O", "eventOwnerTeamId": 10, "xCoord": goal_x_coord + 5, "yCoord": -12},
+             "periodDescriptor": {"number": 3}},
+            {"typeDescKey": "missed-shot",
+             "details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord - 5, "yCoord": 12},
+             "periodDescriptor": {"number": 3}},
+            {"typeDescKey": "missed-shot",
+             "details": {"zoneCode": "O", "eventOwnerTeamId": 20, "xCoord": -goal_x_coord - 5, "yCoord": -12},
+             "periodDescriptor": {"number": 3}},
+
         ]
     }
     helper = get_goal_position_helper(game_data)
