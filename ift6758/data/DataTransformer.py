@@ -2,24 +2,23 @@ import pandas as pd
 from .GoalPositionHelper import get_goal_position_helper
 from .SituationCodeHelper import get_situation_code_helper
 
+default_play_types = ("shot-on-goal", "goal")
+
 class DataTransformer:
 
     """
     This class transforms a list of games in JSON into Panda dataframe
     """
 
-    play_types = ("shot-on-goal", "goal")
-
-
-    def flatten_raw_data_as_dataframe(self, games: list[dict]) -> pd.DataFrame :
+    def flatten_raw_data_as_dataframe(self, games: list[dict], play_types: tuple[str] | None = default_play_types) -> pd.DataFrame :
         """
         Convert records into a dataframe
         """
-        events = self.flatten_raw_data_as_records(games)
+        events = self.flatten_raw_data_as_records(games, play_types)
 
         return pd.DataFrame.from_records(events)
 
-    def flatten_raw_data_as_records(self, games: list[dict]) -> list[dict] :
+    def flatten_raw_data_as_records(self, games: list[dict], play_types: tuple[str] | None = default_play_types) -> list[dict] :
         """
         Get data from an entire season.
         This methods will request the API a lot of time.
@@ -27,14 +26,14 @@ class DataTransformer:
         events = list()
 
         for game in games:
-            rows = self.flatten_game(game)
+            rows = self.flatten_game(game, play_types)
             events.extend(rows)
 
         print(f"Found {len(events)} events")
 
         return events
 
-    def flatten_game(self, game_data: dict) -> list[dict]:
+    def flatten_game(self, game_data: dict, play_types: tuple[str] | None) -> list[dict]:
         """
         This method flatten a single game
         """
@@ -94,7 +93,7 @@ class DataTransformer:
         for index, play in enumerate(plays):
             # Get play type and quit if not in the list
             play_type = play.get("typeDescKey")
-            if play_type not in self.play_types:
+            if play_types is not None and play_type not in play_types:
                 continue
 
             # Get details once
@@ -114,7 +113,7 @@ class DataTransformer:
             elif play_type == "shot-on-goal":
                 description = f"{goalie_in_net.get('goalie_in_net_name')} stops a shot from {shooting_player.get('shooting_player_name')}"
             else:
-                description = "Unknown event"
+                description = f"Event {play_type}"
 
             # Get the root properties
             period = play.get("periodDescriptor", {})
@@ -150,6 +149,9 @@ class DataTransformer:
                 'shot_type': details.get("shotType"),
                 'description': description,
                 'event_owner_team_id': details.get("eventOwnerTeamId"),
+
+                # For penalties
+                'details_type_code': details.get("typeCode"),
 
                 'scoring_player_total': details.get("scoringPlayerTotal"),
                 'assist1_player_total': details.get("assist1PlayerTotal"),

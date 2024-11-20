@@ -1,7 +1,7 @@
 import pandas as pd
 
 from .ApiClient import ApiClient
-from .DataTransformer import DataTransformer
+from .DataTransformer import DataTransformer, default_play_types
 from .FileSystemCache import FileSystemCache
 from .enums import GameType
 import os
@@ -66,32 +66,34 @@ def load_raw_games_data(season: int | None = None) -> list[dict]:
         return []
     return json.loads(data)
 
-def load_events_records(season: int | None = None) -> list[dict]:
+def load_events_records(season: int | None = None, all_types = False) -> list[dict]:
     """
     Loads raw data and flatten plays as json records
     """
+    play_types = None if all_types else default_play_types
     raw_data = load_raw_games_data(season)
 
-    return data_transformer.flatten_raw_data_as_records(raw_data)
+    return data_transformer.flatten_raw_data_as_records(raw_data, play_types)
 
-def load_events_dataframe(season: int | None = None) -> pd.DataFrame:
+def load_events_dataframe(season: int | None = None, all_types = False) -> pd.DataFrame:
     """
     Loads raw data and flatten plays
     """
+    play_types = None if all_types else default_play_types
     raw_data = load_raw_games_data(season)
 
-    return data_transformer.flatten_raw_data_as_dataframe(raw_data)
+    return data_transformer.flatten_raw_data_as_dataframe(raw_data, play_types)
 
-def load_train_test_dataframes() -> tuple[pd.DataFrame, pd.DataFrame]:
+def load_train_test_dataframes(all_types = False) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Train: seasons 2016 to 2019
     Test: season 2020
     """
-    df_2016 = load_events_dataframe(2016)
-    df_2017 = load_events_dataframe(2017)
-    df_2018 = load_events_dataframe(2018)
-    df_2019 = load_events_dataframe(2019)
-    df_2020 = load_events_dataframe(2020).drop(columns="is_goal")
+    df_2016 = load_events_dataframe(2016, all_types=all_types)
+    df_2017 = load_events_dataframe(2017, all_types=all_types)
+    df_2018 = load_events_dataframe(2018, all_types=all_types)
+    df_2019 = load_events_dataframe(2019, all_types=all_types)
+    df_2020 = load_events_dataframe(2020, all_types=all_types).drop(columns="is_goal")
 
     return pd.concat([df_2016, df_2017, df_2018, df_2019]), df_2020
 # -----------------------------------------------------------
