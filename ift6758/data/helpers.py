@@ -89,11 +89,11 @@ def load_train_test_dataframes(all_types = False) -> tuple[pd.DataFrame, pd.Data
     Train: seasons 2016 to 2019
     Test: season 2020
     """
-    df_2016 = load_events_dataframe(2016, all_types)
-    df_2017 = load_events_dataframe(2017, all_types)
-    df_2018 = load_events_dataframe(2018, all_types)
-    df_2019 = load_events_dataframe(2019, all_types)
-    df_2020 = load_events_dataframe(2020, all_types).drop(columns="is_goal")
+    df_2016 = load_events_dataframe(2016, all_types=all_types)
+    df_2017 = load_events_dataframe(2017, all_types=all_types)
+    df_2018 = load_events_dataframe(2018, all_types=all_types)
+    df_2019 = load_events_dataframe(2019, all_types=all_types)
+    df_2020 = load_events_dataframe(2020, all_types=all_types).drop(columns="is_goal")
 
     return pd.concat([df_2016, df_2017, df_2018, df_2019]), df_2020
 # -----------------------------------------------------------

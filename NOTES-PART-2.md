@@ -27,3 +27,19 @@ Cette methode retourne deux dataframes :
 - train: saisons 2016, 2017, 2018 et 2019
 - test: saison 2020, sans la colonne `is_goal`
 
+
+## 4. Ingénierie des caractéristiques II
+
+### Récupération de tous les types d'événements
+
+J'ai ajouté un argument dans les fonctions `load_events_records`, `load_events_dataframe` et `load_train_test_dataframes`
+pour récupérer tous les types d'événements.
+Par défaut, ces fonctions retournent seulement les événements de type `shot-on-goal` et `goal` (comme initialement).
+
+Pour récupérer les données séparées en train et test sets, il suffit d'appeler la fonction `load_train_test_dataframes`
+avec l'argument `all_types=True`.
+
+```python
+from ift6758.data import load_train_test_dataframes
+train_data, test_data = load_train_test_dataframes(all_types=True)
+```
