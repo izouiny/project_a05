@@ -150,6 +150,9 @@ class DataTransformer:
                 'description': description,
                 'event_owner_team_id': details.get("eventOwnerTeamId"),
 
+                # For penalties
+                'details_type_code': details.get("typeCode"),
+
                 'scoring_player_total': details.get("scoringPlayerTotal"),
                 'assist1_player_total': details.get("assist1PlayerTotal"),
                 'assist2_player_total': details.get("assist2PlayerTotal"),

@@ -43,3 +43,8 @@ avec l'argument `all_types=True`.
 from ift6758.data import load_train_test_dataframes
 train_data, test_data = load_train_test_dataframes(all_types=True)
 ```
+
+### Calcul des power-plays
+
+J'ai ajouté la colonne `details_type_code` au DataFrame des événements.
+Ceci permettra de calculer les durées des power-plays.
