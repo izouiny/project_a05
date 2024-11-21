@@ -48,3 +48,22 @@ train_data, test_data = load_train_test_dataframes(all_types=True)
 
 J'ai ajouté la colonne `details_type_code` au DataFrame des événements.
 Ceci permettra de calculer les durées des power-plays.
+
+### Ajout d'une méthode permettant de charger les données augmentées
+
+J'ai ajouté les fonctions `load_advanced_dataframe` et `load_advanced_train_test_dataframes` pour charger
+les données telles que décrit dans le notebook [feature_engineering_ii.ipynb](notebooks/feature_engineering_ii.ipynb).
+
+Pour charger un Dataframe d'une saison donnée :
+
+```python
+from ift6758.features import load_advanced_dataframe
+df = load_advanced_dataframe(2016)
+```
+
+Pour charger les données séparées en train et test sets :
+
+```python
+from ift6758.features import load_advanced_train_test_dataframes
+train_data, test_data = load_advanced_train_test_dataframes()
+```
