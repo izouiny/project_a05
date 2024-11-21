@@ -120,4 +120,4 @@ def four_graphs(Yproba, Yvalid, model_name, save_wandb=False):
 	    print("Can't save calibration curve to wandb")
 	else:
 		plt.savefig("./figures/" + fig_name)
-	return
+	return roc_auc
