@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import wandb
 import random
+import os
 
 # Visualization of the four graphs asked
 def four_graphs(Yproba, Yvalid, model_name, save_wandb=False):
@@ -121,3 +122,82 @@ def four_graphs(Yproba, Yvalid, model_name, save_wandb=False):
 	else:
 		plt.savefig("./figures/" + fig_name)
 	return roc_auc
+	
+	
+	
+def four_graphs_multiple_models(models, folder_name = "models"):
+    """
+    Generate combined plots for ROC curve, goal rate, cumulative % goals, and calibration curves 
+    for multiple models (curves) on the same figure.
+    
+    Parameters:
+        models (dict): A dictionary where keys are model names and values are tuples of (Yproba, Yvalid).
+                       Example: {'model1': (Yproba1, Yvalid1), 'model2': (Yproba2, Yvalid2)}
+    """
+    os.makedirs(f"./figures/{folder_name}", exist_ok=True)  # Ensure output directory exists
+
+    # Plot 1: Combined ROC Curve
+    plt.figure(figsize=(12, 9))
+    for model_name, (Yproba, Yvalid) in models.items():
+        fpr, tpr, _ = roc_curve(Yvalid, Yproba)
+        roc_auc = auc(fpr, tpr)
+        plt.plot(fpr, tpr, lw=2, label=f'{model_name} (AUC = {roc_auc:.2f})')
+    plt.plot([0, 1], [0, 1], color='grey', linestyle='--', lw=1, label='Random Classifier')
+    plt.title('ROC Curve', fontsize=16, fontweight='bold')
+    plt.xlabel('False Positive Rate (FPR)', fontsize=14)
+    plt.ylabel('True Positive Rate (TPR)', fontsize=14)
+    plt.legend(loc='lower right', fontsize=12)
+    plt.grid(alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(f"./figures/{folder_name}/roc_curve.png")
+    plt.close()
+
+    # Plot 2: Combined Goal Rate as a Function of Probability Centiles
+    plt.figure(figsize=(12, 9))
+    for model_name, (Yproba, Yvalid) in models.items():
+        df = pd.DataFrame({'Yproba': Yproba, 'Yvalid': Yvalid})
+        df['centile'] = pd.qcut(df['Yproba'], 100, labels=False, duplicates="drop")
+        centile_goal_rate = df.groupby('centile').apply(lambda group: group['Yvalid'].mean()).reset_index(name='goal_rate')
+        plt.plot(centile_goal_rate['centile'], centile_goal_rate['goal_rate']*100, label=f'Goal Rate for {model_name}')
+    random_goal_rate = Yvalid.mean() * 100  # Overall goal rate in percentage
+    plt.axhline(y=random_goal_rate, color='grey', linestyle='--', label='Random Classifier')
+    plt.title('Goal Rate vs Probability Centiles', fontsize=16, fontweight='bold')
+    plt.xlabel('Probability Centile', fontsize=14)
+    plt.ylabel('Goal Rate', fontsize=14)
+    plt.grid(alpha=0.3)
+    plt.legend(fontsize=12)
+    plt.tight_layout()
+    plt.savefig(f"./figures/{folder_name}/goal_rate.png")
+    plt.close()
+
+    # Plot 3: Combined Cumulative % of Goals as a Function of Probability Centiles
+    plt.figure(figsize=(12, 9))
+    for model_name, (Yproba, Yvalid) in models.items():
+        df = pd.DataFrame({'Yproba': Yproba, 'Yvalid': Yvalid})
+        df['centile'] = pd.qcut(df['Yproba'], 100, labels=False, duplicates="drop")
+        centile_goals = df[df['Yvalid'] == 1].groupby('centile')['Yvalid'].count().reset_index(name='goals')
+        centile_goals['cumulative_goals'] = centile_goals['goals'].cumsum()
+        centile_goals['cumulative_percent'] = 100 * centile_goals['cumulative_goals'] / centile_goals['goals'].sum()
+        plt.plot(centile_goals['centile'], centile_goals['cumulative_percent'], label=f'Cumulative % Goals for {model_name}')
+    plt.plot(range(100), range(1, 101), color='grey', linestyle='--', label='Random Classifier')
+    plt.title('Cumulative % Goals vs Probability Centiles', fontsize=16, fontweight='bold')
+    plt.xlabel('Probability Centile', fontsize=14)
+    plt.ylabel('Cumulative % Goals', fontsize=14)
+    plt.grid(alpha=0.3)
+    plt.legend(fontsize=12)
+    plt.tight_layout()
+    plt.savefig(f"./figures/{folder_name}/cumul_goal_prop.png")
+    plt.close()
+
+    # Plot 4: Combined Calibration Curve
+    fig, ax = plt.subplots(figsize=(12, 9))
+    for model_name, (Yproba, Yvalid) in models.items():
+        CalibrationDisplay.from_predictions(Yvalid, Yproba, n_bins=10, name=model_name, ax=ax)
+    ax.set_title('Calibration Curve', fontsize=16, fontweight='bold')
+    ax.set_xlabel('Mean Predicted Probability', fontsize=14)
+    ax.set_ylabel('Fraction of Positives', fontsize=14)
+    ax.grid(alpha=0.3)
+    ax.legend(fontsize=12)
+    plt.tight_layout()
+    plt.savefig(f"./figures/{folder_name}/calibration_curve.png")
+    plt.close()
