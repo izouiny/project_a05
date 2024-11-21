@@ -95,4 +95,5 @@ def preprocess_advanced(data):
     data["absolute_angle_change"] = data.apply(calculate_absolute_angle_change, axis=1)
     data = calculate_power_play_time(data)
     data = add_skater_counts_for_shooting_team(data)
+    data = data[data["type_desc_key"].isin(["shot-on-goal", "goal"])]
     return data
