@@ -67,3 +67,28 @@ Pour charger les données séparées en train et test sets :
 from ift6758.features import load_advanced_train_test_dataframes
 train_data, test_data = load_advanced_train_test_dataframes()
 ```
+
+### Data preparation for models
+
+J'ai ajouté un pipeline Scikit-learn pour préparer les données avant de les envoyer dans les modèles.
+J'ai fait cela avec un pipeline scikit-learn afin que l'on puisse facilement l'utiliser dans un autre pipeline.
+
+Utilisation dans un pipeline Scikit-learn :
+
+```python
+from ift6758.features import get_preprocessing_pipeline
+from sklearn.pipeline import make_pipeline
+
+preprocessing_pipeline = get_preprocessing_pipeline()
+pipeline = make_pipeline(preprocessing_pipeline, model)
+```
+
+Utilisation sans pipeline Scikit-learn :
+
+```python
+from ift6758.features import get_preprocessing_pipeline
+
+preprocessing_pipeline = get_preprocessing_pipeline()
+X_train = preprocessing_pipeline.fit_transform(X_train)
+X_test = preprocessing_pipeline.transform(X_test)
+```
