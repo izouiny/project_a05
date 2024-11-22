@@ -1,9 +1,10 @@
+import os
+
 from sklearn.metrics import accuracy_score
 import wandb
 import joblib
 
 from ift6758.features import load_train_val_test_x_y
-
 
 def train_and_val_model(model, model_params, model_slug: str, model_name: str, use_wandb=True):
     """
@@ -15,10 +16,10 @@ def train_and_val_model(model, model_params, model_slug: str, model_name: str, u
         y_val: The true values
     """
     # Load the data
-    X_train, y_train, X_val, y_val, X_test, y_test = load_train_val_test_x_y(test_size=0.2)
+    X_train, y_train, X_val, y_val, X_test, y_test = load_data_from_cache(test_size=0.2)
 
     # Print the columns names
-    print(X_train.columns)
+    print("Columns names:", X_train.columns)
 
     # Init wandb if needed
     if use_wandb:
@@ -54,3 +55,32 @@ def train_and_val_model(model, model_params, model_slug: str, model_name: str, u
         wandb.finish()
 
     return model, y_pred, y_val
+
+
+def load_data_from_cache(test_size=0.2):
+    """
+    Load the data once and save it
+    Load the data and split it into train, validation and test sets
+    """
+    # Load the data once and save it
+    if not os.path.exists("data"):
+        os.makedirs("data")
+        # Load the data
+        X_train, y_train, X_val, y_val, X_test, y_test = load_train_val_test_x_y(test_size=test_size)
+        # Save the data
+        joblib.dump(X_train, "data/X_train.pkl")
+        joblib.dump(y_train, "data/y_train.pkl")
+        joblib.dump(X_val, "data/X_val.pkl")
+        joblib.dump(y_val, "data/y_val.pkl")
+        joblib.dump(X_test, "data/X_test.pkl")
+        joblib.dump(y_test, "data/y_test.pkl")
+    else:
+        # Load the data
+        X_train = joblib.load("data/X_train.pkl")
+        y_train = joblib.load("data/y_train.pkl")
+        X_val = joblib.load("data/X_val.pkl")
+        y_val = joblib.load("data/y_val.pkl")
+        X_test = joblib.load("data/X_test.pkl")
+        y_test = joblib.load("data/y_test.pkl")
+
+    return X_train, y_train, X_val, y_val, X_test, y_test
