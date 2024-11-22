@@ -38,4 +38,4 @@ def train_and_test_random_forest(use_wandb=True):
 #-----------------------------------------------------
 if __name__ == "__main__":
     model, y_pred, y_val = train_and_test_random_forest()
-    four_graphs(y_pred, y_val, "Random Forest", save_wandb=False)
+    four_graphs(y_pred, y_val, "random_forest", save_wandb=False)

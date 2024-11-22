@@ -17,6 +17,9 @@ def train_and_val_model(model, model_params, model_slug: str, model_name: str, u
     # Load the data
     X_train, y_train, X_val, y_val, X_test, y_test = load_train_val_test_x_y(test_size=0.2)
 
+    # Print the columns names
+    print(X_train.columns)
+
     # Init wandb if needed
     if use_wandb:
         wandb.init(

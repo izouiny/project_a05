@@ -5,7 +5,7 @@ from sklearn.preprocessing import OneHotEncoder, Normalizer, StandardScaler
 
 from .ColumnDropperTransformer import ColumnDropperTransformer
 
-features_to_drop = (
+features_to_drop = [
     'game_id',
     'season',
     'game_date',
@@ -60,7 +60,7 @@ features_to_drop = (
     'home_score',
     'away_sog',
     'home_sog',
-)
+]
 
 def get_preprocessing_pipeline(skip_drop=True) -> Pipeline:
     """

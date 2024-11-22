@@ -43,13 +43,13 @@ def load_train_val_test_x_y(test_size: float) -> tuple[pd.DataFrame, pd.DataFram
     target_col = "is_goal"
 
     # Split X and y
-    X_train = train_df.drop(columns=features_to_drop, errors="ignore")
+    X_train = train_df.drop(features_to_drop, axis=1, errors="ignore")
     y_train = train_df[target_col]
 
-    X_val = val_df.drop(columns=features_to_drop, errors="ignore")
+    X_val = val_df.drop(features_to_drop, axis=1, errors="ignore")
     y_val = val_df[target_col]
 
-    X_test = test_df.drop(columns=features_to_drop, errors="ignore")
+    X_test = test_df.drop(features_to_drop, axis=1, errors="ignore")
     y_test = test_df[target_col]
 
     return X_train, y_train, X_val, y_val, X_test, y_test
