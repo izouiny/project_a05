@@ -68,8 +68,6 @@ def get_preprocessing_pipeline() -> Pipeline:
         # To check if we can remove these columns
         'away_sog', # We don't know if the event is from home or away team ?
         'home_sog', # We don't know if the event is from home or away team ?
-        'shooting_team_skaters',
-        'opposing_team_skaters',
     ]
 
     categorical_features = [
