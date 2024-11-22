@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.metrics import accuracy_score, roc_auc_score
 import wandb
 import joblib
+import pandas as pd
 
 from ift6758.features import load_train_val_test_x_y
 
@@ -72,6 +73,36 @@ def train_and_val_model(
             wandb.finish()
 
     return model, y_pred, y_proba, y_val
+
+
+def train_and_test_model(
+        model,
+        model_slug: str,
+):
+    # Load the data
+    X_train, y_train, X_val, y_val, X_test, y_test = load_data_from_cache()
+
+    # Join the train and validation sets
+    X_train = pd.concat([X_train, X_val])
+    y_train = pd.concat([y_train, y_val])
+
+    # Train the model
+    model.fit(X_train, y_train)
+
+    # Save the model
+    joblib.dump(model, f"artifacts/{model_slug}.pkl")
+
+    # Evaluate the model
+    y_proba = model.predict_proba(X_test)
+    y_pred = np.argmax(y_proba, axis=1)
+    accuracy = accuracy_score(y_test, y_pred)
+    auc_score = roc_auc_score(y_test, y_proba[:, 1])
+
+    print(f"Accuracy: {accuracy}")
+    print(f"AUC: {auc_score}")
+
+    # Save the results to npz
+    np.savez(f"artifacts/{model_slug}.npz", y_pred_proba=y_proba[:, 1], y_test=y_test)
 
 
 def load_data_from_cache():
