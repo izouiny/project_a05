@@ -26,7 +26,7 @@ def load_advanced_train_test_dataframes() -> tuple[pd.DataFrame, pd.DataFrame]:
     df_2017 = load_advanced_dataframe(2017)
     df_2018 = load_advanced_dataframe(2018)
     df_2019 = load_advanced_dataframe(2019)
-    df_2020 = load_advanced_dataframe(2020).drop(columns="is_goal")
+    df_2020 = load_advanced_dataframe(2020)
 
     return pd.concat([df_2016, df_2017, df_2018, df_2019]), df_2020
 
