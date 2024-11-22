@@ -7,7 +7,15 @@ import joblib
 
 from ift6758.features import load_train_val_test_x_y
 
-def train_and_val_model(model, model_params, model_slug: str, model_name: str, use_wandb=True, close_wandb=True):
+def train_and_val_model(
+        model,
+        model_params,
+        model_slug: str,
+        model_name: str,
+        project: str = "ift6758-milestone-2",
+        use_wandb=True,
+        close_wandb=True
+):
     """
     Train and test a scikit learn model
 
@@ -26,7 +34,7 @@ def train_and_val_model(model, model_params, model_slug: str, model_name: str, u
     # Init wandb if needed
     if use_wandb:
         wandb.init(
-            project="ift6758-milestone-2",
+            project=project,
             name=model_slug,
             config={
                 "architecture": model_name,
