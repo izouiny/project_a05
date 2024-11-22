@@ -121,6 +121,7 @@ def four_graphs(Yproba, Yvalid, model_name, save_wandb=False):
 	    print("Can't save calibration curve to wandb")
 	else:
 		plt.savefig("./figures/" + fig_name)
+	plt.close()
 	return roc_auc
 	
 	
@@ -201,3 +202,38 @@ def four_graphs_multiple_models(models, folder_name = "models"):
     plt.tight_layout()
     plt.savefig(f"./figures/{folder_name}/calibration_curve.png")
     plt.close()
+
+
+# Function for hyperparameters optimization visualization only
+# Save ROC curve with selected_model's curve in red and all other models' in blue
+def four_graphs_multiple_models_hp(models, selected_model_name, folder_name="models"):
+	"""
+	Generate combined plots for ROC curve, goal rate, cumulative % goals, and calibration curves
+	for multiple models (curves) on the same figure.
+
+	Parameters:
+		models (dict): A dictionary where keys are model names and values are tuples of (Yproba, Yvalid).
+					   Example: {'model1': (Yproba1, Yvalid1), 'model2': (Yproba2, Yvalid2)}
+	"""
+	os.makedirs(f"./figures/{folder_name}", exist_ok=True)  # Ensure output directory exists
+
+	# Plot 1: Combined ROC Curve
+	plt.figure(figsize=(12, 9))
+	for model_name, (Yproba, Yvalid) in models.items():
+		fpr, tpr, _ = roc_curve(Yvalid, Yproba)
+		roc_auc = auc(fpr, tpr)
+		if model_name == selected_model_name:
+			plt.plot(fpr, tpr, lw=2, label=f'Selected model: {model_name} (AUC = {roc_auc:.4f})', color="r", zorder=2)
+		else:
+			plt.plot(fpr, tpr, lw=2, color="b", zorder=1)
+
+	plt.plot([0, 1], [0, 1], color='grey', linestyle='--', lw=1, label='Random Classifier')
+	plt.title('ROC Curve for all different hyperparameter configurations', fontsize=16, fontweight='bold')
+	plt.xlabel('False Positive Rate (FPR)', fontsize=14)
+	plt.ylabel('True Positive Rate (TPR)', fontsize=14)
+	plt.legend(loc='lower right', fontsize=12)
+	plt.grid(alpha=0.3)
+	plt.tight_layout()
+	plt.savefig(f"./figures/{folder_name}/roc_curve.png")
+	plt.close()
+

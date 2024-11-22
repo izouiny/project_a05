@@ -1,5 +1,5 @@
 from ift6758.data import fetch_all_seasons_games_data
-from ift6758.visualizations import four_graphs
+from ift6758.visualizations import four_graphs, four_graphs_multiple_models
 from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, roc_curve, auc
 from sklearn.calibration import CalibrationDisplay
 from matplotlib import pyplot as plt
@@ -23,7 +23,7 @@ def load_data(method="80-20"):
 		dvalid = pd.read_csv("./data_for_models/validation_set2.csv")
 	return dtrain, dvalid
 
-# Load all data (choose which train-valid separation method to use)
+# Load all data
 def load_all_data():
 	dtrain = pd.read_csv("./data_for_models/best_xgboost/train.csv")
 	dvalid = pd.read_csv("./data_for_models/best_xgboost/valid.csv")
@@ -42,12 +42,75 @@ def one_hot(index, size):
 	return ar
 
 def proba_format(Yproba):
+	'''
+	Put the predicted quantities by the model between 0 and 1 to interpret them as probabilities
+	'''
 	for i in range(len(Yproba)):
 		if Yproba[i] < 0:
 			Yproba[i] = 0
 		elif Yproba[i] > 1:
 			Yproba[i] = 1
 	return Yproba
+
+
+def make_graphs(b, e, g, m):
+	'''
+	Make graphs for XGBoost's hyperparameters comparison independently
+	'''
+	dicts = [b, e, g, m]
+	hps = ["booster", "eta", "gamma", "max_depth"]
+	for i in range(4):
+		dict = dicts[i]
+		hp = hps[i]
+		mean_acc = []
+		mean_auc = []
+		x = []
+		for (key, value) in enumerate(dict.items()):
+			#print(f"Key : {key}")
+			#print(f"Value : {value}")
+			key = value[0]
+			if len(value[1][0]) == 0:
+				continue
+			else:
+				x.append(key)
+				accs = np.array(value[1][0])
+				#print(accs)
+				mean_acc.append(np.mean(accs))
+				aucs = np.array(value[1][1])
+				mean_auc.append(np.mean(aucs))
+
+		if len(x) == 0:
+			continue
+
+		# Used chat gpt for the generation of this graph
+		bar_width = 0.4
+		x_positions = np.arange(len(x))
+
+		# Plot bars
+		plt.clf()
+		bars_acc = plt.bar(x_positions - bar_width / 2, mean_acc, width=bar_width, label='Accuracy', color='blue', alpha=0.7)
+		bars_auc = plt.bar(x_positions + bar_width / 2, mean_auc, width=bar_width, label='AUC', color='orange', alpha=0.7)
+
+		# Add values on top of bars
+		for bar in bars_acc:
+			plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.005,
+					 f'{bar.get_height():.4f}', ha='center', va='bottom', fontsize=9, color='blue')
+
+		for bar in bars_auc:
+			plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.005,
+					 f'{bar.get_height():.4f}', ha='center', va='bottom', fontsize=9, color='orange')
+
+		# Add labels, title, and legend
+		plt.xlabel(f'{hp} configurations')
+		plt.ylabel('Metrics')
+		plt.title(f'Accuracy and AUC for different {hp} configurations')
+		plt.xticks(ticks=x_positions, labels=x)
+		plt.ylim(0, 1)
+		plt.legend()
+
+		# Show the plot
+		plt.tight_layout()
+		plt.savefig(f"./figures/best_xgboost/{hp}.png")
 
 
 def pre_treatment_adv_df(df):
@@ -76,21 +139,12 @@ def pre_treatment_adv_df(df):
 	df['last_event_type'] = df['last_event_type'].map(mapping)
 	return df
 
-"""", ', 'period_number', 'period_type',
-       , ,
-      , 'is_empty_net', 'is_goal', 
-        , ,
-       'x_coord', 'y_coord',  'shot_type', 
-         'goal_distance',
-       'goal_angle', 
-       'time_in_period_seconds',
-       'game_seconds', , 'last_x', 'last_y',
-       'time_since_last_event', 'distance_from_last_event', 'is_rebound',
-       'speed', 'last_angle', 'absolute_angle_change',
-       'power_play_time_elapsed', 'shooting_team_skaters',
-       'opposing_team_skaters'"""
 
 def show_proba(Yproba):
+	'''
+	Visualize your model's predicted probabilities
+	Yproba
+	'''
 	counts = Counter(Yproba)
 	values = list(counts.keys())
 	frequencies = list(counts.values())
@@ -179,16 +233,6 @@ def best_xgboost(use_wandb=False):
 	dtrain, dval = load_all_data()
 
 	dtrain = pre_treatment_adv_df(dtrain)
-	"""dtrain_goals = dtrain[dtrain["is_goal"]==True]
-	dtrain_goals_rebound = dtrain_goals[dtrain_goals["is_rebound"]==True]
-	dtrain_no_goals = dtrain[dtrain["is_goal"]==False]
-	dtrain_no_goals_rebound = dtrain_no_goals[dtrain_no_goals["is_rebound"] == True]
-	f = open("./dtrain_goals.txt", "w")
-	f.write(str(dtrain_no_goals_rebound.iloc[9]))
-	f.write("\n")
-	f.write(str(dtrain_goals_rebound.iloc[18]))
-	f.close()"""
-
 	dval = pre_treatment_adv_df(dval)
 
 	dtrainx = dtrain.drop("is_goal", axis=1)
@@ -203,8 +247,15 @@ def best_xgboost(use_wandb=False):
 	booster = ["gbtree", "dart"]
 	eta = [0.1, 0.3, 0.5, 0.8]
 	gamma = [0, 10, 100]
-	max_depth = [4, 6, 8]
+	max_depth = [4, 6, 8, 12]
 
+	# Each hyperparameter value has its own list of accuracies and auc. Ex: ([accuracy], [auc])
+	booster_v = {"gbtree": ([], []), "dart": ([], [])}
+	eta_v = {0.1: ([], []), 0.3: ([], []), 0.5: ([], []), 0.8: ([], [])}
+	gamma_v = {0: ([], []), 10: ([], []), 100: ([], [])}
+	max_depth_v = {4: ([], []), 6: ([], []), 8: ([], []), 12: ([], [])}
+
+	# Create Run objects to keep track of hyperparameters selection
 	runs = []
 	for b in booster:
 		for e in eta:
@@ -213,9 +264,8 @@ def best_xgboost(use_wandb=False):
 					run = Run(b, e, g, md)
 					runs.append(run)
 
-	#runs = runs[:1]
-
 	perf = ""
+	models = {}
 	for run in runs:
 		model = "best_xgboost_" + str(run)
 		perf += "----------------------------------------------------------------------------------------------------\n"
@@ -240,13 +290,13 @@ def best_xgboost(use_wandb=False):
 
 		param = {'booster': run.booster, 'eta': run.eta, 'gamma': run.gamma, 'max_depth': run.max_depth}
 		evallist = [(train, 'train'), (val, 'eval')]
-		#evallist = [(train, 'train')]
 		num_round = 10
 		bst = xgb.train(param, train, num_round, evallist, early_stopping_rounds=3)
 		bst.save_model(f'./models/{model}.model')
 		Yproba = bst.predict(val, iteration_range=(0, bst.best_iteration + 1))
+
 		Yproba = proba_format(Yproba)
-		show_proba(Yproba)
+		#show_proba(Yproba)
 		Ypred = [proba > 0.5 for proba in Yproba]
 		print(f"Nombre de buts dans Ypred : {np.sum(Ypred)}")
 		accuracy = accuracy_score(Yval, Ypred)
@@ -254,6 +304,8 @@ def best_xgboost(use_wandb=False):
 		perf += f"Accuracy : {str(accuracy)}\n"
 		run.set_acc(accuracy)
 		Yval = Yval.flatten()
+		auc = 0
+		models[model] = (Yproba, Yval)
 
 		# Log model as an artifact
 		if use_wandb:
@@ -263,16 +315,31 @@ def best_xgboost(use_wandb=False):
 			wandb.log({"accuracy": accuracy})
 
 			auc = four_graphs(Yproba, Yval, model, save_wandb=True)
-
+			wandb.log({"auc": auc})
+			
 			# Finish the run
 			wandb.finish()
 		else:
 			auc = four_graphs(Yproba, Yval, model)
+			booster_v[run.booster][0].append(float(accuracy))
+			booster_v[run.booster][1].append(float(auc))
+			eta_v[run.eta][0].append(float(accuracy))
+			eta_v[run.eta][1].append(float(auc))
+			gamma_v[run.gamma][0].append(float(accuracy))
+			gamma_v[run.gamma][1].append(float(auc))
+			max_depth_v[run.max_depth][0].append(float(accuracy))
+			max_depth_v[run.max_depth][1].append(float(auc))
+
 		perf += f"AUC : {str(auc)}\n"
+
 
 	f = open("./best_xgboost_perf.txt", "w")
 	f.write(perf)
 	f.close()
+
+	if not use_wandb:
+		make_graphs(booster_v, eta_v, gamma_v, max_depth_v)
+		four_graphs_multiple_models_hp(models, "best_xgboost_gbtree_0.3_0_8", "best_xgboost")
 	return
 
-best_xgboost()
+#best_xgboost()
