@@ -92,3 +92,12 @@ preprocessing_pipeline = get_preprocessing_pipeline()
 X_train = preprocessing_pipeline.fit_transform(X_train)
 X_test = preprocessing_pipeline.transform(X_test)
 ```
+
+### Split et nettoyage des données
+
+Ajout d'une fonction `load_train_val_test_x_y` pour charger les données séparées en train, validation et test sets.
+
+```python
+from ift6758.features import load_train_val_test_x_y
+X_train, y_train, X_val, y_val, X_test, y_test = load_train_val_test_x_y(test_size=0.2)
+```
