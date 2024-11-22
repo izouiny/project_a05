@@ -34,10 +34,13 @@ def get_preprocessing_pipeline() -> Pipeline:
         'description',
         'event_owner_team_id',
         'details_type_code',
+        'shooting_player_id',
         'shooting_player_name',
         'shooting_player_team_id',
+        'goalie_in_net_id',
         'goalie_in_net_name',
         'goalie_in_net_team_id',
+        'goalie_in_net_position_code',
 
         # Remove source columns that are not useful anymore
         'x_coord',
@@ -64,17 +67,14 @@ def get_preprocessing_pipeline() -> Pipeline:
         'assist2_player_position_code',
         'away_score',
         'home_score',
-
-        # To check if we can remove these columns
-        'away_sog', # We don't know if the event is from home or away team ?
-        'home_sog', # We don't know if the event is from home or away team ?
+        'away_sog',
+        'home_sog',
     ]
 
     categorical_features = [
         'period_type',
         'zone_code',
         'shot_type',
-        'goalie_in_net_position_code',
         'shooting_player_position_code',
         'last_event_type',
     ]
