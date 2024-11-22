@@ -16,7 +16,7 @@ def train_and_val_model(model, model_params, model_slug: str, model_name: str, u
         y_val: The true values
     """
     # Load the data
-    X_train, y_train, X_val, y_val, X_test, y_test = load_data_from_cache(test_size=0.2)
+    X_train, y_train, X_val, y_val, X_test, y_test = load_data_from_cache()
 
     # Print the columns names
     print("Columns names:", X_train.columns)
@@ -57,7 +57,7 @@ def train_and_val_model(model, model_params, model_slug: str, model_name: str, u
     return model, y_pred, y_val
 
 
-def load_data_from_cache(test_size=0.2):
+def load_data_from_cache():
     """
     Load the data once and save it
     Load the data and split it into train, validation and test sets
@@ -67,7 +67,7 @@ def load_data_from_cache(test_size=0.2):
     if not os.path.exists(folder):
         os.makedirs(folder)
         # Load the data
-        X_train, y_train, X_val, y_val, X_test, y_test = load_train_val_test_x_y(test_size=test_size)
+        X_train, y_train, X_val, y_val, X_test, y_test = load_train_val_test_x_y(test_size=0.2)
         # Save the data
         joblib.dump(X_train, f"{folder}/X_train.pkl")
         joblib.dump(y_train, f"{folder}/y_train.pkl")
