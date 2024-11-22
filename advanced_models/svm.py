@@ -1,3 +1,4 @@
+import numpy as np
 from sklearn.svm import SVC
 from sklearn.pipeline import Pipeline
 import wandb
@@ -33,6 +34,7 @@ def train_and_test_svm(C = 1.0, kernel = "rbf", use_wandb=True, close_wandb=True
     ])
 
     return train_and_val_model(
+        project="svm",
         model=model,
         model_slug="svm",
         model_name="SVM",
@@ -46,8 +48,10 @@ def train_and_test_svm(C = 1.0, kernel = "rbf", use_wandb=True, close_wandb=True
 if __name__ == "__main__":
     use_wandb = True
 
-    C_values = [0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0]
-    kernel_values = ["linear", "poly", "rbf", "sigmoid"]
+    # C_values = [0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0]
+    C_values = np.linspace(0.55, 0.95, 10)
+    # kernel_values = ["linear", "poly", "rbf", "sigmoid"]
+    kernel_values = ["rbf"]
 
     for c in C_values:
         for k in kernel_values:

@@ -34,6 +34,7 @@ def train_and_test_random_forest(n_estimators = 300, max_depth = 12, use_wandb=T
     ])
 
     return train_and_val_model(
+        project="random_forest",
         model=model,
         model_slug="random_forest",
         model_name="Random Forest",
@@ -57,8 +58,8 @@ if __name__ == "__main__":
             if use_wandb:
                 wandb.finish()
 
-    # model, y_pred, y_proba, y_val = train_and_test_random_forest(use_wandb=use_wandb, close_wandb=False)
+    # model, y_pred, y_proba, y_val = train_and_test_random_forest(n_estimators=1000, max_depth=18, use_wandb=use_wandb, close_wandb=False)
     # four_graphs(y_proba[:, 1], y_val, "random_forest", save_wandb=use_wandb)
-
+    #
     # if use_wandb:
     #     wandb.finish()
