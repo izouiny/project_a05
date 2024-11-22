@@ -5,7 +5,7 @@ from sklearn.preprocessing import OneHotEncoder, Normalizer, StandardScaler
 
 from .ColumnDropperTransformer import ColumnDropperTransformer
 
-features_to_drop = [
+features_to_drop = (
     'game_id',
     'season',
     'game_date',
@@ -60,12 +60,19 @@ features_to_drop = [
     'home_score',
     'away_sog',
     'home_sog',
-]
+)
 
-def get_preprocessing_pipeline() -> Pipeline:
+def get_preprocessing_pipeline(skip_drop=True) -> Pipeline:
     """
     Returns a scikit-learn data pipeline that can be used to transform data
     Compatible with scikit-learn pipelines
+
+    Parameters
+    ----------
+
+    skip_drop : bool (default=True)
+        If True, the features_to_drop will not be dropped from the dataset.
+        This is useful if the columns have already been dropped.
     """
 
     #-------------------------------------------
@@ -112,10 +119,12 @@ def get_preprocessing_pipeline() -> Pipeline:
     #-------------------------------------------
     # Create final pipeline
 
+    to_drop = [] if skip_drop else features_to_drop
+
     pipeline = Pipeline([
         # Drop unused columns
         # Ensure that the features_to_drop has been dropped
-        ('drop_columns', ColumnDropperTransformer(features_to_drop)),
+        ('drop_columns', ColumnDropperTransformer(to_drop)),
 
         # Preprocess numeric and categorical features differently
         ('col_transformer', ColumnTransformer([
