@@ -1,7 +1,7 @@
 import os
 
 import numpy as np
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, roc_auc_score
 import wandb
 import joblib
 
@@ -43,7 +43,11 @@ def train_and_val_model(model, model_params, model_slug: str, model_name: str, u
     # Evaluate the model
     y_proba = model.predict_proba(X_val)
     y_pred = np.argmax(y_proba, axis=1)
-    accuracy = accuracy_score(y_pred, y_val)
+    accuracy = accuracy_score(y_val, y_pred)
+    auc_score = roc_auc_score(y_val, y_proba[:, 1])
+
+    print(f"Accuracy: {accuracy}")
+    print(f"AUC: {auc_score}")
 
     if use_wandb:
         # Send the model to wandb
@@ -53,6 +57,7 @@ def train_and_val_model(model, model_params, model_slug: str, model_name: str, u
         # Log the model and accuracy
         wandb.log_artifact(artifact)
         wandb.log({"accuracy": accuracy})
+        wandb.log({"auc": auc_score})
 
         # Finish the run
         if close_wandb:

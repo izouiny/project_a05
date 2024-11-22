@@ -111,8 +111,8 @@ def get_preprocessing_pipeline(skip_drop=True) -> Pipeline:
         ('imputer', SimpleImputer(strategy='mean')),
 
         # Normalize features
-        ('norm', Normalizer()),
-        # ('scaler', StandardScaler())
+        # ('norm', Normalizer()),
+        ('scaler', StandardScaler())
     ])
 
     categorical_transformer = Pipeline([
