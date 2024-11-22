@@ -5,6 +5,63 @@ from sklearn.preprocessing import OneHotEncoder, Normalizer, StandardScaler
 
 from .ColumnDropperTransformer import ColumnDropperTransformer
 
+features_to_drop = [
+    'game_id',
+    'season',
+    'game_date',
+    'venue',
+    'venue_location',
+    'away_team_id',
+    'away_team_abbrev',
+    'away_team_name',
+    'home_team_id',
+    'home_team_abbrev',
+    'home_team_name',
+    'event_id',
+    'event_idx',
+    'sort_order',
+    'time_in_period',
+    'time_remaining',
+    'description',
+    'event_owner_team_id',
+    'details_type_code',
+    'shooting_player_id',
+    'shooting_player_name',
+    'shooting_player_team_id',
+    'goalie_in_net_id',
+    'goalie_in_net_name',
+    'goalie_in_net_team_id',
+    'goalie_in_net_position_code',
+
+    # Remove source columns that are not useful anymore
+    'x_coord',
+    'y_coord',
+    'goal_x_coord',
+    'last_x',
+    'last_y',
+    'goal_side',
+
+    # Remove target column and related columns
+    'is_goal',
+    'type_desc_key',
+    'scoring_player_id',
+    'scoring_player_name',
+    'scoring_player_team_id',
+    'scoring_player_position_code',
+    'assist1_player_id',
+    'assist1_player_name',
+    'assist1_player_team_id',
+    'assist1_player_position_code',
+    'assist2_player_id',
+    'assist2_player_name',
+    'assist2_player_team_id',
+    'assist2_player_position_code',
+    'away_score',
+    'home_score',
+    'away_sog',
+    'home_sog',
+]
+
 def get_preprocessing_pipeline() -> Pipeline:
     """
     Returns a scikit-learn data pipeline that can be used to transform data
@@ -13,63 +70,6 @@ def get_preprocessing_pipeline() -> Pipeline:
 
     #-------------------------------------------
     # Create features sets
-
-    dropped_features = [
-        'game_id',
-        'season',
-        'game_date',
-        'venue',
-        'venue_location',
-        'away_team_id',
-        'away_team_abbrev',
-        'away_team_name',
-        'home_team_id',
-        'home_team_abbrev',
-        'home_team_name',
-        'event_id',
-        'event_idx',
-        'sort_order',
-        'time_in_period',
-        'time_remaining',
-        'description',
-        'event_owner_team_id',
-        'details_type_code',
-        'shooting_player_id',
-        'shooting_player_name',
-        'shooting_player_team_id',
-        'goalie_in_net_id',
-        'goalie_in_net_name',
-        'goalie_in_net_team_id',
-        'goalie_in_net_position_code',
-
-        # Remove source columns that are not useful anymore
-        'x_coord',
-        'y_coord',
-        'goal_x_coord',
-        'last_x',
-        'last_y',
-        'goal_side',
-
-        # Remove target column and related columns
-        'is_goal',
-        'type_desc_key',
-        'scoring_player_id',
-        'scoring_player_name',
-        'scoring_player_team_id',
-        'scoring_player_position_code',
-        'assist1_player_id',
-        'assist1_player_name',
-        'assist1_player_team_id',
-        'assist1_player_position_code',
-        'assist2_player_id',
-        'assist2_player_name',
-        'assist2_player_team_id',
-        'assist2_player_position_code',
-        'away_score',
-        'home_score',
-        'away_sog',
-        'home_sog',
-    ]
 
     categorical_features = [
         'period_type',
@@ -114,7 +114,8 @@ def get_preprocessing_pipeline() -> Pipeline:
 
     pipeline = Pipeline([
         # Drop unused columns
-        ('drop_columns', ColumnDropperTransformer(dropped_features)),
+        # Ensure that the features_to_drop has been dropped
+        ('drop_columns', ColumnDropperTransformer(features_to_drop)),
 
         # Preprocess numeric and categorical features differently
         ('col_transformer', ColumnTransformer([
