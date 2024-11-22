@@ -1,5 +1,6 @@
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
+import wandb
 
 from model_trainer import train_and_val_model
 from ift6758.features import get_preprocessing_pipeline
@@ -7,13 +8,14 @@ from ift6758.visualizations import four_graphs
 
 from os import cpu_count
 
-def train_and_test_random_forest(use_wandb=True):
+def train_and_test_random_forest(use_wandb=True, close_wandb=True):
     """
     Train and test a random forest model
 
     Returns:
         model: The trained model
         y_pred: The predicted values
+        y_proba: The predicted probabilities
         y_val: The true values
     """
     # Arguments for the model
@@ -34,11 +36,17 @@ def train_and_test_random_forest(use_wandb=True):
         model_slug="random_forest",
         model_name="Random Forest",
         model_params=model_params,
-        use_wandb=use_wandb
+        use_wandb=use_wandb,
+        close_wandb=close_wandb
     )
 
 #-----------------------------------------------------
 #-----------------------------------------------------
 if __name__ == "__main__":
-    model, y_pred, y_val = train_and_test_random_forest()
-    four_graphs(y_pred, y_val, "random_forest", save_wandb=False)
+    use_wandb = True
+
+    model, y_pred, y_proba, y_val = train_and_test_random_forest(use_wandb=use_wandb, close_wandb=False)
+    four_graphs(y_proba[:, 1], y_val, "random_forest", save_wandb=use_wandb)
+
+    if use_wandb:
+        wandb.finish()

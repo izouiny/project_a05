@@ -1,18 +1,20 @@
 import os
 
+import numpy as np
 from sklearn.metrics import accuracy_score
 import wandb
 import joblib
 
 from ift6758.features import load_train_val_test_x_y
 
-def train_and_val_model(model, model_params, model_slug: str, model_name: str, use_wandb=True):
+def train_and_val_model(model, model_params, model_slug: str, model_name: str, use_wandb=True, close_wandb=True):
     """
     Train and test a scikit learn model
 
     Returns:
         model: The trained model
         y_pred: The predicted values
+        y_proba: The predicted probabilities
         y_val: The true values
     """
     # Load the data
@@ -39,7 +41,8 @@ def train_and_val_model(model, model_params, model_slug: str, model_name: str, u
     joblib.dump(model, f"artifacts/{model_slug}.pkl")
 
     # Evaluate the model
-    y_pred = model.predict(X_val)
+    y_proba = model.predict_proba(X_val)
+    y_pred = np.argmax(y_proba, axis=1)
     accuracy = accuracy_score(y_pred, y_val)
 
     if use_wandb:
@@ -52,9 +55,10 @@ def train_and_val_model(model, model_params, model_slug: str, model_name: str, u
         wandb.log({"accuracy": accuracy})
 
         # Finish the run
-        wandb.finish()
+        if close_wandb:
+            wandb.finish()
 
-    return model, y_pred, y_val
+    return model, y_pred, y_proba, y_val
 
 
 def load_data_from_cache():
