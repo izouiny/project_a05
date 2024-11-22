@@ -5,6 +5,8 @@ from model_trainer import train_and_val_model
 from ift6758.features import get_preprocessing_pipeline
 from ift6758.visualizations import four_graphs
 
+from os import cpu_count
+
 def train_and_test_random_forest(use_wandb=True):
     """
     Train and test a random forest model
@@ -17,7 +19,8 @@ def train_and_test_random_forest(use_wandb=True):
     # Arguments for the model
     model_params = {
         "n_estimators": 100,
-        "random_state": 42
+        "random_state": 42,
+        "n_jobs": max(1, cpu_count() - 1)
     }
 
     # Create the model
