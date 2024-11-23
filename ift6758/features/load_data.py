@@ -53,3 +53,25 @@ def load_train_val_test_x_y(test_size: float) -> tuple[pd.DataFrame, pd.DataFram
     y_test = test_df[target_col]
 
     return X_train, y_train, X_val, y_val, X_test, y_test
+
+def load_train_test_x_y(game_type: int | None) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """
+    Load train and test dataframes
+    """
+    train_df, test_df = load_advanced_train_test_dataframes()
+
+    # filter test_df by game_type
+    if game_type is not None:
+        test_df = test_df[test_df["game_type"] == game_type]
+
+    # Target column
+    target_col = "is_goal"
+
+    # Split X and y
+    X_train = train_df.drop(features_to_drop, axis=1, errors="ignore")
+    y_train = train_df[target_col]
+
+    X_test = test_df.drop(features_to_drop, axis=1, errors="ignore")
+    y_test = test_df[target_col]
+
+    return X_train, y_train, X_test, y_test
