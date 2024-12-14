@@ -21,3 +21,4 @@ dependencies:
   - scikit-learn
   - wandb
   - xgboost
+  - streamlit
