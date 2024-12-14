@@ -5,20 +5,20 @@ import json
 import wandb
 import plotly.express as px
 
-# Configuration de la page Streamlit
+# config streamlit
 st.set_page_config(
     page_title="Hockey Visualization App",
     layout="wide"
 )
 st.title("Hockey Visualization App")
 
-# Initialisation de WandB
+# init de WandB
 st.sidebar.header("WandB Configuration")
 workspace = st.sidebar.text_input("Workspace", placeholder="Enter WandB workspace name")
 model = st.sidebar.text_input("Model", placeholder="Enter model name")
 version = st.sidebar.text_input("Version", placeholder="Enter model version")
 
-# Bouton pour télécharger le modèle via WandB
+# télécharger le modèle via WandB
 if st.sidebar.button("Get model"):
     try:
         response = requests.post(
@@ -33,17 +33,16 @@ if st.sidebar.button("Get model"):
     except Exception as e:
         st.sidebar.error(f"An error occurred: {e}")
 
-# Section principale : Saisie de l'ID du jeu
+# ID du match
 game_id = st.text_input("Game ID", placeholder="Enter Game ID (e.g., 2021020329)")
 
 if st.button("Ping game"):
     try:
-        # Appel à l'API pour récupérer les données du jeu
+        # API pour recup les données du match
         response = requests.get(f"http://127.0.0.1:8000/game_data/{game_id}")
         if response.status_code == 200:
             game_data = response.json()
 
-            # Affichage des informations de base sur le jeu
             home_team = game_data['teams']['home']
             away_team = game_data['teams']['away']
             period = game_data['period']
@@ -54,7 +53,6 @@ if st.button("Ping game"):
             st.subheader(f"Game {game_id}: {home_team} vs {away_team}")
             st.write(f"**Period**: {period} - **Time Left**: {time_left}")
 
-            # Affichage des scores et des buts attendus
             col1, col2 = st.columns(2)
             col1.metric(
                 f"{home_team} xG (actual)",
@@ -67,12 +65,10 @@ if st.button("Ping game"):
                 delta=round(xg['away'] - score['away'], 2)
             )
 
-            # Gestion des événements et des prédictions
             events_df = pd.DataFrame(game_data["events"])
             st.subheader("Data used for predictions (and predictions)")
             st.dataframe(events_df)
 
-            # Filtrer les nouveaux événements
             new_events = events_df[~events_df['processed']]
             if not new_events.empty:
                 prediction_response = requests.post(
@@ -85,7 +81,7 @@ if st.button("Ping game"):
                     st.write("Predictions:")
                     st.dataframe(predictions_df)
 
-                    # Enregistrer les prédictions dans WandB
+                    # save les preds dans WandB
                     run = wandb.init(project="hockey-xg", name=f"predictions_game_{game_id}", reinit=True)
                     table = wandb.Table(dataframe=predictions_df)
                     run.log({"predictions": table})
@@ -100,7 +96,7 @@ if st.button("Ping game"):
     except Exception as e:
         st.error(f"An error occurred: {e}")
 
-# Visualisation graphique (optionnelle)
+# visualisation graphique (bonus)
 if "game_data" in locals() and game_data:
     try:
         fig = px.line(events_df, x="time", y="xG", color="team", title="Expected Goals Over Time")
