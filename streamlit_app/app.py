@@ -22,7 +22,7 @@ version = st.sidebar.text_input("Version", placeholder="Enter model version")
 if st.sidebar.button("Get model"):
     try:
         response = requests.post(
-            "http://127.0.0.1:<8000>/download_registry_model",
+            "http://127.0.0.1:8000/download_registry_model",
             json={"workspace": workspace, "model": model, "version": version}
         )
         if response.status_code == 200:
@@ -39,7 +39,7 @@ game_id = st.text_input("Game ID", placeholder="Enter Game ID (e.g., 2021020329)
 if st.button("Ping game"):
     try:
         # Appel à l'API pour récupérer les données du jeu
-        response = requests.get(f"http://127.0.0.1:<PORT>/game_data/{game_id}")
+        response = requests.get(f"http://127.0.0.1:8000/game_data/{game_id}")
         if response.status_code == 200:
             game_data = response.json()
 
@@ -76,7 +76,7 @@ if st.button("Ping game"):
             new_events = events_df[~events_df['processed']]
             if not new_events.empty:
                 prediction_response = requests.post(
-                    "http://127.0.0.1:<PORT>/predict",
+                    "http://127.0.0.1:0>/predict",
                     json=json.loads(new_events.to_json(orient="records"))
                 )
                 if prediction_response.status_code == 200:
