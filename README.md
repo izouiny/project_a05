@@ -1,3 +1,7 @@
+# NHL Goal Prediction Engine - Milestones 1 and 2 of Data Science course (IFT6758)
+
+This is the code for the first and second milestones of this project. The former includes exploration and visualization of the data. The latter is about feature engineering, feature selection, model selection and hyperparameters' optimization for predicting if a shot will be a goal. The third milestone is in another repository, right [here](https://github.com/PhilSchoeb/NHL_milestone3). The analysis of our work for the two first milestones can be found at [this repository](https://github.com/PhilSchoeb/NHL_blog_milestone1-2).
+
 # IFT6758 Repo Template
  
 This template provides you with a skeleton of a Python package that can be installed into your local machine.
